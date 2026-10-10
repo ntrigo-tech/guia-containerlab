@@ -1,1 +1,178 @@
-index
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab de Sniffing — Telnet · FTP · HTTP (ContainerLab + OVS)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fafaf9; --panel:#ffffff; --fg:#1c1917; --muted:#6b6560;
+    --accent:#b45309; --accent-soft:#fdf0e1; --border:#e5e1da;
+    --ok:#1e7a4c; --ok-soft:#e8f5ee;
+    --font-head:'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+    --font-mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:var(--font-head);}
+  body{line-height:1.55;font-size:16px;padding:2.5rem 1.75rem 4rem;max-width:920px;margin:0 auto;}
+  h1{font-size:clamp(28px,5vw,42px);font-weight:800;margin:0 0 .25rem;letter-spacing:-0.01em;}
+  .subtitle{color:var(--muted);font-size:1.05rem;margin:0 0 2rem;}
+  h2{font-size:1.45rem;font-weight:700;margin:2.75rem 0 1rem;padding-top:.75rem;border-top:1px solid var(--border);}
+  h2:first-of-type{border-top:none;padding-top:0;}
+  h3{font-size:1.05rem;font-weight:700;margin:1.5rem 0 .5rem;}
+  p{margin:.5rem 0 .75rem;}
+  .lead{font-size:1.05rem;background:var(--accent-soft);border:1px solid #f0d9b5;border-radius:10px;padding:1rem 1.25rem;}
+  .badge{display:inline-block;font-family:var(--font-mono);font-size:.75rem;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid #f0d9b5;border-radius:999px;padding:.15rem .65rem;letter-spacing:.02em;margin-bottom:1rem;}
+  code{font-family:var(--font-mono);font-size:.88em;background:#f1efe9;border:1px solid var(--border);border-radius:5px;padding:.1rem .35rem;color:var(--fg);}
+  pre{font-family:var(--font-mono);font-size:.85rem;background:#1c1917;color:#f3ede3;border-radius:10px;padding:1rem 1.1rem;overflow-x:auto;line-height:1.6;margin:.75rem 0 1.25rem;}
+  pre code{background:none;border:none;padding:0;color:inherit;}
+  .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;}
+  table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:.92rem;}
+  th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);}
+  th{background:#f1efe9;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);}
+  td.mono, th.mono{font-family:var(--font-mono);}
+  tr:nth-child(even) td{background:#fcfbf9;}
+  .diagram{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.75rem 1.25rem;margin:1rem 0 1.5rem;}
+  .diagram svg{width:100%;height:auto;display:block;}
+  ol,ul{padding-left:1.4rem;margin:.5rem 0 1rem;}
+  li{margin:.35rem 0;}
+  .note{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;padding:.75rem 1rem;margin:1rem 0;font-size:.95rem;}
+  .note strong{color:var(--accent);}
+  .ok-note{border-left:3px solid var(--ok);background:var(--ok-soft);border-radius:0 8px 8px 0;padding:.75rem 1rem;margin:1rem 0;font-size:.95rem;}
+  .ok-note strong{color:var(--ok);}
+  .module{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1.5rem 1.25rem;margin:1.25rem 0;}
+  .module-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.25rem;}
+  .module-head h3{margin:0;font-size:1.2rem;}
+  .tag{font-family:var(--font-mono);font-size:.72rem;font-weight:700;color:#fff;background:var(--accent);border-radius:999px;padding:.2rem .6rem;white-space:nowrap;}
+  .step{display:flex;gap:.75rem;margin:.75rem 0;}
+  .step-num{flex:none;width:1.6rem;height:1.6rem;border-radius:50%;background:#f1efe9;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.78rem;font-weight:700;color:var(--muted);}
+  .step-body{flex:1;min-width:0;}
+  .step-body pre, .step-body p{margin:.3rem 0;}
+  footer{margin-top:3rem;padding-top:1.25rem;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;}
+</style>
+</head>
+<body>
+
+  <span class="badge">CONTAINERLAB · OVS · TOPOVIEWER</span>
+  <h1>Lab de Sniffing: Telnet · FTP · HTTP</h1>
+  <p class="subtitle">2 PCs Linux + 1 switch OVS. Tres servicios para capturar.</p>
+
+  <p class="lead"><strong>Idea del lab:</strong> pcB corre tres servicios clásicos sin cifrado (Telnet, FTP, HTTP con Basic Auth). Desde pcA, cada estudiante abre una shell vía TopoViewer y prueba el servicio que quiera, capturando con <code>tcpdump</code> y revisando el <code>.pcap</code> en Wireshark — las credenciales quedan visibles en texto plano en los tres casos.</p>
+
+  <h2>Topología</h2>
+  <div class="diagram">
+    <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama: pcA y pcB conectados al switch SWA, pcB con tres servicios">
+      <line x1="140" y1="120" x2="300" y2="120" stroke="#b45309" stroke-width="2"/>
+      <line x1="340" y1="120" x2="500" y2="120" stroke="#b45309" stroke-width="2"/>
+
+      <rect x="40" y="80" width="100" height="80" rx="10" fill="#616a6b"/>
+      <text x="90" y="115" text-anchor="middle" fill="#fff" font-family="Plus Jakarta Sans" font-weight="700" font-size="14">pcA</text>
+      <text x="90" y="132" text-anchor="middle" fill="#e7e5e3" font-family="JetBrains Mono" font-size="10">10.0.7.1/24</text>
+      <text x="90" y="145" text-anchor="middle" fill="#e7e5e3" font-family="JetBrains Mono" font-size="9">cliente</text>
+
+      <rect x="300" y="70" width="40" height="100" rx="8" fill="#1e8449"/>
+      <text x="320" y="30" text-anchor="middle" fill="#1c1917" font-family="Plus Jakarta Sans" font-weight="700" font-size="14">SWA</text>
+      <text x="320" y="48" text-anchor="middle" fill="#6b6560" font-family="JetBrains Mono" font-size="10">Open vSwitch (contenedor)</text>
+
+      <rect x="500" y="80" width="100" height="80" rx="10" fill="#616a6b"/>
+      <text x="550" y="108" text-anchor="middle" fill="#fff" font-family="Plus Jakarta Sans" font-weight="700" font-size="14">pcB</text>
+      <text x="550" y="123" text-anchor="middle" fill="#e7e5e3" font-family="JetBrains Mono" font-size="9">10.0.7.2/24</text>
+      <text x="550" y="136" text-anchor="middle" fill="#e7e5e3" font-family="JetBrains Mono" font-size="9">telnetd</text>
+      <text x="550" y="147" text-anchor="middle" fill="#e7e5e3" font-family="JetBrains Mono" font-size="9">ftpd · httpd</text>
+
+      <text x="220" y="110" text-anchor="middle" fill="#6b6560" font-family="JetBrains Mono" font-size="10">eth1 — p1</text>
+      <text x="420" y="110" text-anchor="middle" fill="#6b6560" font-family="JetBrains Mono" font-size="10">p2 — eth1</text>
+    </svg>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Nodo</th><th>Imagen</th><th>IP (eth1)</th><th>Servicios</th></tr></thead>
+      <tbody>
+        <tr><td>pcA</td><td class="mono">network-multitool</td><td class="mono">10.0.7.1/24</td><td>Cliente: telnet, curl, tcpdump</td></tr>
+        <tr><td>pcB</td><td class="mono">sniff-pcb:1.1</td><td class="mono">10.0.7.2/24</td><td>telnetd (23) · ftpd (21) · httpd (80)</td></tr>
+        <tr><td>SWA</td><td class="mono">antrea/openvswitch</td><td>—</td><td>Switch L2 (contenedor real con OVS adentro)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note"><strong>👉 Sobre la imagen sniff-pcb:1.1:</strong> A partir de la imagen base Debian, se construyó localmente una imagen personalizada sniff-pcb:1.1, incorporando y configurando los servicios necesarios para el laboratorio.
+La imagen fue probada y validada localmente antes de su publicación en GitHub Container Registry (GHCR).
+Posteriormente, se publicó como ghcr.io/ntrigo-tech/sniff-pcb:1.1, permitiendo su reutilización y versionado en nuevos despliegues.<br>
+<strong>👉 Tips de containerlab:</strong> Para evitar que la terminal expire en topoviewer, una forma de manternerla activa es abrir el shell y ejecutar este comando: for i in $(seq 1 120); do printf "."; sleep 30; done &<br>A veces es necesario actualizar la página con F5 para visualizar nuevos cambios</div>
+
+  <h2>Acceso por shell desde TopoViewer</h2>
+  <p>Ingresar como ya sabemos a https://containerlab.unsj.edu.ar/ y conectar al end point con las credenciales proporcionadas a cada Estudiante :</p>
+  <pre><code>● Ingresar a: ContainerLab UNSJ ● Conectarse con las credenciales suministradas, por ejemplo: ● Username: ntrigo Password: ******** 👉 Click en RECONNECT</code></pre>
+  <p>En el menú ubicado a la izquierda, localizar la opción Upload File. Junto al nombre del servidor api-containerlab.unsj.edu.ar, seleccionar los tres puntos y a continuación, Upload File</p>
+  <pre><code>Cargar el archivo que se entrega junto con este laboratorio: telnet-ftp-http.clab.yml</code></pre>
+
+  <div class="note"><strong>👉 Aclaración importante sobre el yaml:</strong>Tener en cuenta lo siguiente antes de subir el yml: <br>
+    ● nombre del yaml: Agregarle al nombre del yml el usuario, ejemplo: telnet-ftp-http-<strong>&lt;usuario&gt;</strong>.clab.yml<br>
+    ● name dentro del yaml: Ejemplo: name: sniff-telnet-ftp-http-<strong>&lt;usuario&gt;</strong><br>
+    ● en la parte de mgmt: network: mgmt-ovs-switch-<strong>&lt;usuario&gt;</strong><br>
+      ipv4-subnet: 172.20.<strong>&lt;octeto&gt;</strong>.0/24 donde octeto puede ser: 7-8-9-10...<br>
+      Una opción es quedar de acuerdo en que número usar cada usuario.<br>
+    ● en la parte de binds de cada elemento cambiar el path para la captura, ejemplo: binds:
+        - /var/lib/containerlab/labs/<strong>&lt;usuario&gt;</strong>:/capturas
+  </div>
+  <h2>Despliegue</h2>
+  <pre><code>En la parte superior izquierda,en la sección de Undeployed Labs seleccionar: telnet-ftp-http-&lt;usuario&gt;.clab.yml y de los 3 puntos a la derecha del nombre aplicar deploy</code></pre>
+
+  <h2>Módulos — se trabaja en los tres</h2>
+
+  <div class="module">
+    <div class="module-head"><h3>1. Telnet</h3><span class="tag">PUERTO 23</span></div>
+    <p><strong>Qué es / para qué sirve:</strong> protocolo de acceso remoto a terminal, de los años 70. Permite loguearse y ejecutar comandos en otra máquina como si estuvieras sentado frente a ella. Hoy prácticamente en desuso para administración real.</p>
+    <div class="step"><div class="step-num">1</div><div class="step-body"><p>En <strong>pcB</strong> o <strong>pcA</strong>, arranca la captura:</p>
+      <pre><code>tcpdump -i eth1 -w /capturas/sniff_capture.pcap</code></pre></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><p>Desde <strong>pcA</strong>, conéctate:</p>
+      <pre><code>telnet 10.0.7.2</code></pre>
+      <p>Usuario: <code>telnetuser</code> — Contraseña: <code>telnet123</code></p>tipear ls -l y luego exit</div></div>
+  </div>
+  <div class="module">
+    <div class="module-head"><h3>2. FTP</h3><span class="tag">PUERTO 21</span></div>
+    <p><strong>Qué es / para qué sirve:</strong> protocolo para transferir archivos entre cliente y servidor (subir/bajar). Muy usado históricamente para mantener sitios web o compartir archivos en red.</p>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><p>Desde <strong>pcA</strong>, lee el archivo "secreto" con <code>curl</code> (sin instalar nada extra):</p>
+      <pre><code>curl ftp://ftpuser:ftp123@10.0.7.2/secreto.txt</code></pre>
+      <p>Usuario: <code>ftpuser</code> — Contraseña: <code>ftp123</code></p></div></div>
+  </div>
+
+  <div class="module">
+    <div class="module-head"><h3>3. HTTP con Basic Auth</h3><span class="tag">PUERTO 80</span></div>
+    <p><strong>Qué es / para qué sirve:</strong> protocolo base de la web. Con Basic Auth, el servidor pide usuario/contraseña antes de mostrar contenido — muy simple, pero las credenciales solo van codificadas en Base64, no cifradas.</p>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><p>Desde <strong>pcA</strong>:</p>
+      <pre><code>curl -u admin:miclave123 http://10.0.7.2/</code></pre>
+      <p>Usuario: <code>admin</code> — Contraseña: <code>miclave123</code></p></div></div>
+    
+ </div>  
+  
+<div class="step"><div class="step-num">5</div><div class="step-body"><p>Detén la captura (<code>Ctrl+C</code>), saca el archivo y ábrelo en Wireshark: filtro <code>telnet</code> → clic derecho → <strong>Follow → TCP Stream</strong>. Verás cada carácter tecleado, incluida la contraseña.<br>
+Para bajar el archivo .pcap, fijarse que está disponible para descargar en el menú de la izquierda en la parte media, una vez identificado, ir a los 3 puntos a la derecha del nombre y elegir la ópcion download. </p></div></div>
+<div class="step"><div class="step-num">6</div><div class="step-body"><p>En Wireshark, filtro <code>ftp</code> → verás los comandos <code>USER ftpuser</code> y <code>PASS ftp123</code> viajando en texto plano en el canal de control.</p></div></div>
+<div class="step"><div class="step-num">7</div><div class="step-body"><p>En Wireshark, filtro <code>http.authorization</code> → el header <code>Authorization: Basic YWRtaW46bWljbGF2ZTEyMw==</code> aparece directo. Decodifica con:</p>
+      <pre><code>en Linux: echo "YWRtaW46bWljbGF2ZTEyMw==" | base64 -d  En WEB: https://www.base64decode.org/</code></pre></div></div>
+  <h2>¿Por qué en producción se usa SSH, SFTP y HTTPS en su lugar?</h2>
+
+  
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>En claro</th><th>Reemplazo seguro</th><th>Qué cambia</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">Telnet</td><td class="mono">SSH</td><td>Toda la sesión (login + comandos) viaja cifrada; además usa intercambio de claves para autenticar al servidor, evitando que un atacante suplante la máquina destino.</td></tr>
+        <tr><td class="mono">FTP</td><td class="mono">SFTP (sobre SSH)</td><td>Mismo cifrado de SSH aplicado a transferencia de archivos — usuario, contraseña y contenido del archivo quedan protegidos. (No confundir con FTPS, que es FTP + TLS, otra variante también válida.)</td></tr>
+        <tr><td class="mono">HTTP Basic Auth</td><td class="mono">HTTPS (HTTP + TLS)</td><td>TLS cifra toda la conexión antes de que viaje cualquier header, así que el <code>Authorization: Basic ...</code> nunca se ve en claro en la red, aunque la codificación Base64 sigue siendo trivial de revertir si alguien lograra romper el cifrado.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ok-note"><strong>Punto clave para la clase:</strong> en los tres casos el cambio no es "una contraseña más larga" — es que el canal completo se cifra (SSH) o se envuelve en TLS (HTTPS/SFTP sobre SSH), así que capturar los paquetes con tcpdump ya no sirve de nada: lo que se ve es tráfico cifrado ilegible, no texto plano.</div>
+
+  <h2>Limpieza</h2>
+  <pre><code>Destruir el laboratorio desde topoviewer</code></pre>
+
+  
+</body>
+</html>
