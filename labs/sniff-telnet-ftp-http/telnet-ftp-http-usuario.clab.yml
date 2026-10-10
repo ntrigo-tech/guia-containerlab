@@ -1,0 +1,101 @@
+# ============================================================
+# ============================================================
+# Lab de Sniffing - Telnet / FTP / HTTP (sin router, solo L2)
+# # ============================================================
+#
+# Topología:
+#
+#                           SWA
+#                     Open vSwitch - L2
+#                     /              \
+#                    /                \
+#                 pcA                 pcB
+#              10.0.7.1            10.0.7.2
+#              (cliente)      (telnetd+ftpd+httpd)
+#
+# Red de datos:     10.0.7.0/24   (eth1 en pcA/pcB)
+# Red management:   172.20.7.0/24 (eth0, autoasignada por ContainerLab)
+#
+# Sin router-gw: no hay salida a internet ni NAT. Todo el tráfico
+# entre pcA y pcB queda dentro del segmento L2 de SWA -> ideal para
+# sniffear con tcpdump sin ruido de tráfico externo.
+#
+# servicio a sniffear:
+#   - Telnet (23): root / telnet123
+#   - FTP    (21): ftpuser / ftp123
+#   - HTTP   (80, Basic Auth): admin / miclave123
+#
+# Si se desea que no expire la terminal ejecutar este comando:
+# for i in $(seq 1 120); do printf "."; sleep 30; done &
+# ============================================================
+
+name: sniff-telnet-ftp-http-<usuario>
+
+mgmt:
+  network: mgmt-ovs-switch-<usuario>
+  ipv4-subnet: 172.20.X.0/24 # reemplazar X por el valor correspondiente al usuario
+
+topology:
+
+  nodes:
+
+    # ========================================================
+    # SWITCH CAPA 2 - Open vSwitch
+    # ========================================================
+    SWA:
+      kind: linux
+      image: antrea/openvswitch-amd64:antrea-v2.7
+      user: "0:0"
+
+      cap-add:
+        - NET_ADMIN
+        - SYS_ADMIN
+
+      binds:
+        - /var/lib/containerlab/labs/<usuario>:/capturas
+
+      exec:
+        # Primero instalar herramientas
+        - bash -c 'mkdir -p /var/run/openvswitch /etc/openvswitch'
+        - bash -c 'test -f /etc/openvswitch/conf.db || ovsdb-tool create /etc/openvswitch/conf.db /usr/share/openvswitch/vswitch.ovsschema'
+        - bash -c 'ovsdb-server /etc/openvswitch/conf.db --remote=punix:/var/run/openvswitch/db.sock --remote=db:Open_vSwitch,Open_vSwitch,manager_options --pidfile --detach --log-file'
+        - bash -c 'ovs-vsctl --no-wait init'
+        - bash -c 'ovs-vswitchd --pidfile --detach --log-file'
+        - bash -c 'ovs-vsctl add-br SWA -- set bridge SWA datapath_type=netdev'
+        - bash -c 'ovs-vsctl add-port SWA p1'
+        - bash -c 'ovs-vsctl add-port SWA p2'
+        - bash -c 'ip link set SWA up'
+
+    # ========================================================
+    # PC-A - Linux + herramientas de red (cliente)
+    # ========================================================
+    pcA:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+
+      binds:
+        - /var/lib/containerlab/labs/<usuario>:/capturas
+      exec:
+        - ip addr add 10.0.7.1/24 dev eth1
+        - ip link set eth1 up
+
+
+    pcB:
+      kind: linux
+      image: ghcr.io/ntrigo-tech/sniff-pcb:1.1
+
+      binds:
+        - /var/lib/containerlab/labs/<usuario>:/capturas
+
+      exec:
+        - ip addr add 10.0.7.2/24 dev eth1
+        - ip link set eth1 up
+
+  # ==========================================================
+  # CONEXIONES
+  # ==========================================================
+  links:
+
+    - endpoints: ["pcA:eth1", "SWA:p1"]
+
+    - endpoints: ["pcB:eth1", "SWA:p2"]
