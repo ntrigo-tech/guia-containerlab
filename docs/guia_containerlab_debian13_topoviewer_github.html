@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Containerlab: guía práctica desde cero</title>
+    <style>
+:root{
+ --bg:#0b1220;--panel:#121d30;--panel2:#17263c;--ink:#e8eef8;--muted:#aab8ce;
+ --cyan:#49d6e8;--blue:#6ea8fe;--green:#5be0a0;--amber:#ffca70;--red:#ff8585;
+ --line:#2b3b55;--code:#080e18;--purple:#b7a0ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#0b1220,#0e1728 45%,#0b1220);color:var(--ink);font:16px/1.65 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif}
+a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
+header{padding:56px 22px 42px;background:radial-gradient(ellipse at 80% 0%,#17415b 0,transparent 42%),linear-gradient(135deg,#111d32,#0b1220);border-bottom:1px solid var(--line)}
+.wrap{max-width:1120px;margin:auto}
+.eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;color:var(--cyan);font-weight:800}
+h1{font-size:clamp(2.1rem,5vw,4rem);line-height:1.08;max-width:850px;margin:.5rem 0 1rem}
+h2{font-size:1.8rem;line-height:1.2;margin:0 0 1rem}
+h3{font-size:1.18rem;color:var(--cyan);margin:1.25rem 0 .45rem}
+p{margin:.55rem 0 1rem}
+.lead{font-size:1.15rem;color:#d1dced;max-width:820px}
+.pills{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+.pill{border:1px solid #36506c;border-radius:99px;padding:5px 11px;color:#d6e8f8;background:#101d2e;font-size:.86rem}
+nav{position:sticky;top:0;z-index:5;background:#0d1727ee;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow:auto;padding:10px 16px}
+nav a{white-space:nowrap;font-size:.86rem;padding:6px 10px;border-radius:8px;color:#c9d8ec}
+nav a:hover{background:var(--panel2);text-decoration:none}
+main{padding:28px 18px 70px}
+section{scroll-margin-top:72px;margin:28px auto;padding:28px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#121d30f5,#0f1929f5);box-shadow:0 12px 32px #0002}
+.kicker{color:var(--green);font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{border:1px solid var(--line);background:#111c2d;border-radius:13px;padding:17px}
+.card h3{margin-top:0}
+.card .tag{font-size:.76rem;font-weight:800;letter-spacing:.04em}
+.good{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}.blue{color:var(--blue)}
+.callout{border-left:4px solid var(--cyan);padding:12px 16px;background:#10263a;border-radius:0 10px 10px 0;margin:16px 0}
+.callout.warnbox{border-color:var(--amber);background:#2a2418}
+.callout.greenbox{border-color:var(--green);background:#10271f}
+pre{position:relative;overflow:auto;background:var(--code);border:1px solid #26364c;border-radius:12px;padding:17px;color:#d8e6f7;font: .88rem/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.inline{background:#0a1220;border:1px solid #2b3b55;border-radius:5px;padding:2px 5px;color:#bceaf2}
+.copy{float:right;border:1px solid #3a526d;background:#192b41;color:#e9f4ff;padding:5px 9px;border-radius:7px;cursor:pointer;font-size:.78rem}
+.copy:hover{background:#24425e}
+.codehead{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.82rem;margin:16px 0 6px}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.94rem}
+th,td{border-bottom:1px solid var(--line);padding:11px;text-align:left;vertical-align:top}
+th{color:var(--cyan);background:#142237}
+.diagram{background:#0a1321;border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0;overflow:auto}
+.diagram svg{display:block;width:100%;height:auto;min-width:500px}
+.step{display:flex;gap:14px;margin:18px 0}
+.num{flex:0 0 34px;height:34px;border-radius:10px;background:#16394a;color:var(--cyan);display:grid;place-items:center;font-weight:900}
+.step p{margin:.15rem 0}
+.small{font-size:.88rem;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:26px 18px 40px;color:var(--muted)}
+hr{border:0;border-top:1px solid var(--line);margin:22px 0}
+@media(max-width:650px){section{padding:19px;border-radius:13px}header{padding:38px 18px 30px}pre{font-size:.8rem}table{font-size:.85rem}}
+@media print{body{background:white;color:#111}header,section,.card,pre{background:white;color:#111;box-shadow:none}nav,.copy{display:none}section{break-inside:avoid;border-color:#aaa}a{color:#0645ad}pre{white-space:pre-wrap}}
+</style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <div class="eyebrow">Guía técnica · Networking · Laboratorios
+          virtuales</div>
+        <h1>Containerlab<br>
+          <span style="color:var(--cyan)">de cero a tu primer
+            laboratorio</span></h1>
+        <p class="lead">Qué es, de dónde viene, cómo instalarlo en
+          Debian 13, cómo administrarlo desde una interfaz web, cómo
+          definir topologías YAML y cómo versionar y publicar
+          laboratorios e imágenes usando GitHub y GHCR.</p>
+        <div class="pills"><span class="pill">Linux / Debian</span><span
+            class="pill">Docker</span><span class="pill">YAML</span><span
+            class="pill">Git + GitHub</span><span class="pill">Networking</span></div>
+      </div>
+    </header>
+    <nav>
+      <div class="wrap">
+        <a href="#que-es">Qué es</a><a href="#origen">Origen</a><a
+          href="#ventajas">Ventajas</a><a href="#instalacion">Instalación</a><a
+          href="#topologia">Primer lab</a><a href="#gui">Interfaz web</a><a
+          href="#usuarios">Usuarios</a><a href="#github">GitHub / GHCR</a><a
+          href="#tips">Troubleshooting</a><a href="#fuentes">Fuentes</a>
+      </div>
+    </nav>
+    <main class="wrap">
+      <section id="que-es">
+        <div class="kicker">01 · Conceptos</div>
+        <h2>¿Qué es Containerlab?</h2>
+        <p><strong>Containerlab</strong> es una herramienta open source
+          para definir, desplegar y administrar topologías de red
+          construidas principalmente con contenedores Linux. La
+          topología se describe en un archivo YAML y Containerlab crea
+          los nodos y enlaces usando un runtime de contenedores,
+          normalmente Docker.</p>
+        <p>Los nodos pueden ser imágenes de sistemas operativos de red,
+          routers virtuales, herramientas Linux, generadores de tráfico,
+          servicios de redes móviles 4G-5G o servicios de
+          infraestructura. <br>
+        </p>
+        <div class="diagram">
+          <svg viewBox="0 0 900 250" role="img" aria-label="Flujo de
+            trabajo de Containerlab">
+            <defs><marker id="arr" markerWidth="10" markerHeight="10"
+                refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3
+                  z" fill="#49d6e8"></path></marker></defs>
+            <rect x="20" y="40" width="185" height="150" rx="14"
+              fill="#14263b" stroke="#49d6e8" stroke-width="2"></rect>
+            <text x="112" y="75" fill="#49d6e8" font-size="18"
+              font-weight="700" text-anchor="middle">Topología YAML</text><text
+              x="112" y="105" fill="#e8eef8" font-size="14"
+              text-anchor="middle">nodos + enlaces</text><text x="112"
+              y="128" fill="#e8eef8" font-size="14" text-anchor="middle">imágenes
+              + parámetros</text><text x="112" y="160" fill="#aab8ce"
+              font-size="12" text-anchor="middle">lab.clab.yml</text>
+            <path d="M210 115 H270" stroke="#49d6e8" stroke-width="3"
+              marker-end="url(#arr)"></path>
+            <rect x="280" y="40" width="180" height="150" rx="14"
+              fill="#14263b" stroke="#6ea8fe" stroke-width="2"></rect>
+            <text x="370" y="78" fill="#6ea8fe" font-size="18"
+              font-weight="700" text-anchor="middle">Containerlab</text><text
+              x="370" y="108" fill="#e8eef8" font-size="14"
+              text-anchor="middle">deploy / inspect</text><text x="370"
+              y="132" fill="#e8eef8" font-size="14" text-anchor="middle">destroy
+              / exec</text><text x="370" y="161" fill="#aab8ce"
+              font-size="12" text-anchor="middle">orquestación</text>
+            <path d="M465 115 H525" stroke="#49d6e8" stroke-width="3"
+              marker-end="url(#arr)"></path>
+            <rect x="535" y="25" width="340" height="180" rx="14"
+              fill="#10271f" stroke="#5be0a0" stroke-width="2"></rect>
+            <text x="705" y="56" fill="#5be0a0" font-size="18"
+              font-weight="700" text-anchor="middle">Runtime de
+              contenedores</text>
+            <rect x="560" y="78" width="125" height="46" rx="8"
+              fill="#183c32" stroke="#5be0a0"></rect><text x="622"
+              y="106" fill="#e8eef8" font-size="14" text-anchor="middle">Nodo
+              A</text>
+            <rect x="725" y="78" width="125" height="46" rx="8"
+              fill="#183c32" stroke="#5be0a0"></rect><text x="787"
+              y="106" fill="#e8eef8" font-size="14" text-anchor="middle">Nodo
+              B</text>
+            <path d="M685 101 H725" stroke="#ffca70" stroke-width="4"></path><text
+              x="705" y="145" fill="#ffca70" font-size="12"
+              text-anchor="middle">enlace virtual</text>
+            <text x="705" y="177" fill="#aab8ce" font-size="12"
+              text-anchor="middle">interfaces + namespaces</text> </svg></div>
+        <div class="callout"><strong>Idea clave:</strong> el YAML es la
+          fuente declarativa de la topología. El laboratorio puede
+          desplegarse, destruirse y volver a desplegarse de forma
+          repetible, siempre que las imágenes y las condiciones del host
+          estén disponibles.</div>
+      </section>
+      <section id="origen">
+        <div class="kicker">02 · Proyecto</div>
+        <h2>Origen y ecosistema</h2>
+        <p>Containerlab nació en el ecosistema de <strong>Nokia</strong>,
+          impulsado por el equipo relacionado con Nokia SR Linux y
+          publicado como proyecto open source bajo la organización <a
+            href="https://github.com/srl-labs/containerlab"
+            target="_blank" rel="noopener">srl-labs en GitHub</a>. No es
+          un producto exclusivo para equipos Nokia: puede trabajar con
+          múltiples tipos de nodos e imágenes, de acuerdo con el soporte
+          y los requisitos de cada imagen.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Containerlab</h3>
+            <p>Interpreta la topología YAML y administra el ciclo de
+              vida del laboratorio.</p>
+          </div>
+          <div class="card">
+            <h3>Docker</h3>
+            <p>Descarga imágenes, ejecuta contenedores y aporta el
+              runtime de red.</p>
+          </div>
+          <div class="card">
+            <h3>GitHub</h3>
+            <p>Hospeda el código, los YAML, documentación, historial y
+              colaboración.</p>
+          </div>
+          <div class="card">
+            <h3>GHCR</h3>
+            <p>GitHub Container Registry almacena y distribuye imágenes
+              de contenedores.</p>
+          </div>
+        </div>
+        <p class="small">GitHub y GHCR son servicios distintos: un
+          repositorio Git almacena archivos y versiones del proyecto; un
+          paquete GHCR almacena imágenes de contenedores.</p>
+      </section>
+      <section id="ventajas">
+        <div class="kicker">03 · Por qué usarlo</div>
+        <h2>Ventajas y límites</h2>
+        <div class="grid">
+          <div class="card">
+            <div class="tag good">REPETIBILIDAD</div>
+            <h3>Topologías como código</h3>
+            <p>La topología queda documentada en YAML, se puede revisar
+              en Git y recrear en otros hosts compatibles.</p>
+          </div>
+          <div class="card">
+            <div class="tag good">EFICIENCIA</div>
+            <h3>Menos sobrecarga</h3>
+            <p>Los contenedores suelen consumir menos recursos que una
+              VM completa por nodo, aunque las imágenes de red pueden
+              ser exigentes.</p>
+          </div>
+          <div class="card">
+            <div class="tag good">AUTOMATIZACIÓN</div>
+            <h3>CLI e integración</h3>
+            <p>Permite automatizar deploy, inspección, comandos y
+              destrucción de laboratorios mediante scripts y pipelines.</p>
+          </div>
+          <div class="card">
+            <div class="tag good">COLABORACIÓN</div>
+            <h3>GitHub y repositorios</h3>
+            <p>Docentes y estudiantes pueden compartir topologías,
+              revisar cambios y trabajar con versiones controladas.</p>
+          </div>
+          <div class="card">
+            <div class="tag blue">FLEXIBILIDAD</div>
+            <h3>Distintas imágenes</h3>
+            <p>Permite combinar hosts Linux, routers virtuales y
+              herramientas de análisis, según compatibilidad y
+              licencias.</p>
+          </div>
+          <div class="card">
+            <div class="tag warn">LÍMITES</div>
+            <h3>No es magia</h3>
+            <p>El rendimiento depende de CPU, RAM, disco, kernel, imagen
+              y tipo de tráfico. No todas las funciones de hardware se
+              emulan.</p>
+          </div>
+        </div>
+      </section>
+      <section id="instalacion">
+        <div class="kicker">04 · Instalación desde cero</div>
+        <h2>Debian 13: host, Docker y Containerlab</h2>
+        <p>Usá una instalación actualizada de Debian 13, acceso con <code
+            class="inline">sudo</code> o root y conectividad a los
+          repositorios. Los comandos siguientes son una ruta práctica;
+          verificá siempre la documentación oficial si cambian los
+          métodos de instalación.</p>
+        <h3>4.1 Actualizar e instalar utilidades</h3>
+        <div class="codehead"><span>Terminal · Debian</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo apt update
+sudo apt full-upgrade -y
+sudo apt install -y ca-certificates curl gnupg git nano iproute2 iputils-ping</code></pre>
+        <h3>4.2 Instalar Docker</h3>
+        <p>Para una instalación sencilla de laboratorio se puede usar el
+          paquete de Debian:</p>
+        <div class="codehead"><span>Terminal</span><button class="copy"
+            onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo apt install -y docker.io
+sudo systemctl enable --now docker
+sudo docker version
+sudo docker run --rm hello-world</code></pre>
+        <p>Para entornos productivos o para seguir el canal de versiones
+          del proveedor, consultá la <a
+            href="https://docs.docker.com/engine/install/debian/"
+            target="_blank" rel="noopener">guía oficial de Docker Engine
+            para Debian</a>. Evitá mezclar repositorios de
+          distribuciones distintas.</p>
+        <h3>4.3 Instalar Containerlab</h3>
+        <p>El instalador oficial instala Containerlab y puede ofrecer la
+          instalación de Docker y otras herramientas.<br>
+        </p>
+        <div class="codehead"><span>Instalador oficial</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>bash -c "$(curl -sL https://get.containerlab.dev)"
+containerlab version
+containerlab --help</code></pre>
+        <p>Alternativamente, seguí la sección de instalación APT del
+          sitio oficial para configurar el repositorio y luego instalar
+          el paquete <code class="inline">containerlab</code>. No
+          ejecutes scripts remotos a ciegas en un servidor
+          institucional: revisá su contenido y política de cambios
+          antes.</p>
+        <h3>4.4 Permisos y verificación</h3>
+        <div class="codehead"><span>Terminal</span><button class="copy"
+            onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo docker ps
+containerlab version
+groups</code></pre>
+        <p>La pertenencia al grupo <code class="inline">docker</code>
+          permite controlar Docker y equivale, en la práctica, a
+          privilegios elevados sobre el host. La administración
+          privilegiada de Containerlab también debe limitarse a usuarios
+          de confianza. Cerrá sesión y volvé a entrar si agregás un
+          usuario a un grupo.</p>
+        <div class="callout warnbox"><strong>Seguridad:</strong> no
+          expongas el socket Docker, la API de Containerlab ni una
+          interfaz de laboratorio a Internet sin autenticación, TLS,
+          controles de red y una política de permisos adecuada.</div>
+      </section>
+      <section id="topologia">
+        <div class="kicker">05 · Primer laboratorio</div>
+        <h2>Dos PCs Linux conectadas</h2>
+        <p>Ejemplo mínimo con la imagen <code class="inline">ghcr.io/srl-labs/network-multitool</code>.
+          El enlace de datos une <code class="inline">pcA:eth1</code>
+          con <code class="inline">pcB:eth1</code>. La interfaz de
+          gestión que crea Containerlab suele ser <code class="inline">eth0</code>;
+          el ejemplo asigna IPs de laboratorio a <code class="inline">eth1</code>.</p>
+        <div class="diagram">
+          <svg viewBox="0 0 850 230" role="img" aria-label="Topología de
+            dos PCs conectadas">
+            <defs><marker id="arr2" markerWidth="10" markerHeight="10"
+                refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3
+                  z" fill="#ffca70"></path></marker></defs>
+            <rect x="45" y="35" width="230" height="145" rx="15"
+              fill="#13283d" stroke="#49d6e8" stroke-width="2"></rect>
+            <rect x="575" y="35" width="230" height="145" rx="15"
+              fill="#13283d" stroke="#49d6e8" stroke-width="2"></rect>
+            <rect x="70" y="54" width="180" height="35" rx="7"
+              fill="#1d4257"></rect><text x="160" y="77" fill="#e8eef8"
+              font-size="17" text-anchor="middle" font-weight="700">pcA</text>
+            <rect x="600" y="54" width="180" height="35" rx="7"
+              fill="#1d4257"></rect><text x="690" y="77" fill="#e8eef8"
+              font-size="17" text-anchor="middle" font-weight="700">pcB</text>
+            <text x="160" y="119" fill="#49d6e8" font-size="15"
+              text-anchor="middle">eth1 · 10.0.0.1/24</text><text
+              x="160" y="144" fill="#aab8ce" font-size="12"
+              text-anchor="middle">network-multitool</text>
+            <text x="690" y="119" fill="#49d6e8" font-size="15"
+              text-anchor="middle">eth1 · 10.0.0.2/24</text><text
+              x="690" y="144" fill="#aab8ce" font-size="12"
+              text-anchor="middle">network-multitool</text>
+            <path d="M275 106 H575" stroke="#ffca70" stroke-width="5"
+              marker-end="url(#arr2)"></path><text x="425" y="91"
+              fill="#ffca70" font-size="14" text-anchor="middle">enlace
+              L2 virtual</text>
+            <text x="425" y="130" fill="#aab8ce" font-size="12"
+              text-anchor="middle">10.0.0.0/24</text>
+            <text x="425" y="211" fill="#aab8ce" font-size="12"
+              text-anchor="middle">Plano de datos separado de la red de
+              gestión</text> </svg></div>
+        <h3>5.1 Crear el archivo YAML</h3>
+        <p>Creá un directorio de trabajo y guardá el siguiente contenido
+          como <code class="inline">dos-pcs.clab.yml</code>.</p>
+        <div class="codehead"><span>dos-pcs.clab.yml</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>name: dos-pcs
+
+topology:
+  nodes:
+    pcA:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+      exec:
+        - ip link set eth1 up
+        - ip address add 10.0.0.1/24 dev eth1
+
+    pcB:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+      exec:
+        - ip link set eth1 up
+        - ip address add 10.0.0.2/24 dev eth1
+
+  links:
+    - endpoints: ["pcA:eth1", "pcB:eth1"]</code></pre>
+        <div class="callout warnbox"><strong>Nota sobre la imagen:</strong>
+          el ejemplo presupone que la imagen arranca con una shell
+          compatible y que la interfaz de datos se llama <code
+            class="inline">eth1</code>. Si una versión concreta de la
+          imagen o del runtime presenta otro comportamiento, comprobá
+          las interfaces con <code class="inline">ip -br addr</code> y
+          ajustá el YAML. La etiqueta <code class="inline">latest</code>
+          puede cambiar; para prácticas reproducibles, fijá una versión
+          o digest verificado.</div>
+        <h3>5.2 Desplegar y probar</h3>
+        <div class="codehead"><span>Terminal</span><button class="copy"
+            onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>mkdir -p ~/labs/dos-pcs
+cd ~/labs/dos-pcs
+# Guardar aquí dos-pcs.clab.yml
+sudo containerlab deploy -t dos-pcs.clab.yml
+sudo containerlab inspect -t dos-pcs.clab.yml
+sudo docker exec -it clab-dos-pcs-pcA ping -c 4 10.0.0.2
+sudo docker exec -it clab-dos-pcs-pcB ip -br addr</code></pre>
+        <p>Containerlab descarga la imagen si no está localmente
+          disponible. El nombre habitual de los contenedores incluye el
+          prefijo del laboratorio, por ejemplo <code class="inline">clab-dos-pcs-pcA</code>;
+          verificá el nombre real con <code class="inline">docker ps</code>.</p>
+        <h3>5.3 Destruir el laboratorio</h3>
+        <div class="codehead"><span>Terminal</span><button class="copy"
+            onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo containerlab destroy -t dos-pcs.clab.yml</code></pre>
+      </section>
+      <section id="gui">
+        <div class="kicker">06 · Interfaz gráfica</div>
+        <h2>TopoViewer y la interfaz web</h2>
+        <p>TopoViewer: interfaz web para visualizar y gestionar las
+          topologías de Containerlab.<br>
+          Backend/API: servicio al que se conecta la interfaz para
+          realizar las operaciones.<br>
+          Host Linux: equipo donde se ejecutan Containerlab, Docker y
+          los nodos del laboratorio.<br>
+          Usuarios: el procedimiento de alta depende de la
+          implementación concreta de TopoViewer; no corresponde asumir
+          que utiliza los grupos clab_api y clab_admins de otra
+          solución.<br>
+        </p>
+        <meta http-equiv="content-type" content="text/html;
+          charset=UTF-8">
+        <h3>6.1 Instalar la API oficial en el host de laboratorio</h3>
+        <div class="codehead"><span>Debian · Host Linux</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>curl -fsSL https://raw.githubusercontent.com/srl-labs/clab-api-server/main/install.sh | sudo bash -s -- install
+sudoedit /etc/clab-api-server/clab-api-server.env</code></pre>
+        <p>Revisá como mínimo la dirección anunciada por la API (<code
+            class="inline">API_SERVER_HOST</code>), el secreto JWT
+          generado por el instalador y <code class="inline">CORS_ALLOWED_ORIGINS</code>
+          cuando una interfaz web en otro origen deba comunicarse
+          directamente con la API. No publiques el secreto JWT ni lo
+          incluyas en Git.</p>
+        <h3>6.2 Iniciar y verificar el servicio</h3>
+        <div class="codehead"><span>Terminal</span><button class="copy"
+            onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo systemctl enable --now clab-api-server
+sudo systemctl status clab-api-server
+sudo journalctl -u clab-api-server -n 100 --no-pager</code></pre>
+        <h3>6.3 Ejecutar la interfaz web oficial</h3>
+        <div class="codehead"><span>Terminal · Docker</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo docker run -d --name containerlab-app \
+  --restart unless-stopped \
+  --network host \
+  ghcr.io/srl-labs/containerlab-web:latest</code></pre>
+        <p>Desde un navegador que pueda alcanzar el servidor, abrí <code
+            class="inline">https://IP-O-DNS-DEL-HOST:3001</code>. La
+          imagen usa HTTPS con certificado autofirmado por defecto, por
+          lo que el navegador puede mostrar una advertencia. Si la web y
+          la API están en el mismo host, el endpoint predeterminado
+          suele ser <code class="inline">https://localhost:8090</code>
+          desde el punto de vista del servidor web; si están separados,
+          usá un nombre DNS o IP alcanzable desde la aplicación web.</p>
+        <div class="callout warnbox"><strong>No confundir productos:</strong>
+          estos pasos corresponden a Containerlab App + clab-api-server.
+          No son instrucciones universales para instalar una
+          distribución de TopoViewer de terceros o de una universidad.</div>
+      </section>
+      <section id="usuarios">
+        <div class="kicker">07 · Acceso y permisos</div>
+        <h2>Crear usuarios para la interfaz web oficial</h2>
+        <p>En Containerlab App oficial no se crean cuentas
+          independientes dentro de la interfaz: la autenticación se
+          apoya en usuarios Linux/PAM del host donde se ejecuta <code
+            class="inline">clab-api-server</code>. El instalador crea
+          los grupos <code class="inline">clab_api</code> y <code
+            class="inline">clab_admins</code> si no existen.</p>
+        <h3>7.1 Crear un usuario Linux</h3>
+        <div class="codehead"><span>Ejemplo: usuario alumno01</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo adduser alumno01
+sudo usermod -aG clab_api alumno01</code></pre>
+        <p>El usuario inicia sesión con su nombre y contraseña Linux. La
+          pertenencia a <code class="inline">clab_api</code> permite el
+          acceso estándar a la API. Para aplicar cambios de grupo, cerrá
+          y volvé a iniciar la sesión cuando corresponda.</p>
+        <h3>7.2 Permisos administrativos</h3>
+        <div class="codehead"><span>Solo para operadores autorizados</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>sudo usermod -aG clab_admins operador01</code></pre>
+        <p class="bad"><strong>Advertencia:</strong> los miembros de <code
+            class="inline">clab_admins</code> tienen permisos elevados
+          para administrar laboratorios. No agregues estudiantes a ese
+          grupo salvo que deban tener privilegios administrativos.</p>
+        <h3>7.3 Modelo mental de permisos</h3>
+        <table>
+          <thead><tr>
+              <th>Elemento</th>
+              <th>Función</th>
+              <th>Recomendación</th>
+            </tr>
+          </thead><tbody>
+            <tr>
+              <td>Cuenta Linux</td>
+              <td>Identidad y autenticación PAM</td>
+              <td>Una cuenta individual por usuario; evitar cuentas
+                compartidas.</td>
+            </tr>
+            <tr>
+              <td><code>clab_api</code></td>
+              <td>Permite acceder a la API</td>
+              <td>Grupo habitual para alumnos y operadores con permisos
+                estándar.</td>
+            </tr>
+            <tr>
+              <td><code>clab_admins</code></td>
+              <td>Permisos elevados sobre los laboratorios</td>
+              <td>Reservar para administradores de confianza.</td>
+            </tr>
+            <tr>
+              <td><code>~/.clab</code></td>
+              <td>Directorio de laboratorios del usuario por defecto</td>
+              <td>Respaldar archivos importantes y documentar políticas
+                de cuotas.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Si tu TopoViewer institucional tiene su propio sistema de
+          usuarios, los pasos pueden ser distintos. No reutilices las
+          instrucciones de grupos Linux sin confirmar qué backend de
+          autenticación usa esa instalación.</p>
+      </section>
+      <section id="github">
+        <div class="kicker">08 · Git, GitHub y GHCR</div>
+        <h2>Cómo usar GitHub con Containerlab</h2>
+        <p>GitHub sirve para versionar y compartir el código del
+          laboratorio; GHCR (GitHub Container Registry) permite publicar
+          imágenes personalizadas. No es obligatorio publicar la imagen:
+          se puede usar una imagen pública existente, como <code
+            class="inline">ghcr.io/srl-labs/network-multitool</code>.</p>
+        <h3>8.1 Crear un repositorio para el laboratorio</h3>
+        <ol>
+          <li>Creá un repositorio en <a href="https://github.com/"
+              target="_blank" rel="noopener">GitHub</a>, por ejemplo <code
+              class="inline">containerlab-dos-pcs</code>.</li>
+          <li>Guardá el YAML, un README con requisitos y los comandos
+            para desplegar/destruir.</li>
+          <li>Inicializá Git, confirmá el cambio y publicá el
+            repositorio.</li>
+        </ol>
+        <div class="codehead"><span>Desde el directorio del laboratorio</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>cd ~/labs/dos-pcs
+git init
+git add dos-pcs.clab.yml
+git commit -m "Agrega laboratorio de dos PCs"
+git branch -M main
+git remote add origin https://github.com/USUARIO/containerlab-dos-pcs.git
+git push -u origin main</code></pre>
+        <p>Reemplazá <code class="inline">USUARIO</code> por tu cuenta
+          u organización y configurá la autenticación de GitHub (por
+          ejemplo, mediante SSH o un método de credenciales admitido).
+          No pongas contraseñas ni tokens en el YAML o en el
+          repositorio.</p>
+        <h3>8.2 Clonar y desplegar desde otro host</h3>
+        <div class="codehead"><span>Otro Debian con Containerlab
+            instalado</span><button class="copy"
+            onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>git clone https://github.com/USUARIO/containerlab-dos-pcs.git
+cd containerlab-dos-pcs
+sudo containerlab deploy -t dos-pcs.clab.yml</code></pre>
+        <h3>8.3 Publicar una imagen propia en GHCR</h3>
+        <p>Si necesitás agregar servicios o herramientas a una imagen
+          base, podés crear un <code class="inline">Dockerfile</code>,
+          construir la imagen localmente, etiquetarla y publicarla en
+          GitHub Container Registry. Ejemplo ilustrativo:</p>
+        <div class="codehead"><span>Dockerfile de ejemplo</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>FROM debian:bookworm
+RUN apt-get update &amp;&amp; apt-get install -y --no-install-recommends \
+    iproute2 iputils-ping curl tcpdump dnsutils \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+CMD ["sleep", "infinity"]</code></pre>
+        <p>Construí y probá primero la imagen local. Después, autenticá
+          Docker contra GHCR usando un token personal con los permisos
+          necesarios o un método de autenticación recomendado por
+          GitHub.</p>
+        <div class="codehead"><span>Build, tag y push</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>docker build -t lab-tools:1.0 .
+docker run --rm lab-tools:1.0 ip -br addr
+
+docker tag lab-tools:1.0 ghcr.io/USUARIO/lab-tools:1.0
+echo "$GHCR_TOKEN" | docker login ghcr.io -u USUARIO --password-stdin
+docker push ghcr.io/USUARIO/lab-tools:1.0</code></pre>
+        <div class="callout warnbox"><strong>Token:</strong> definí <code
+            class="inline">GHCR_TOKEN</code> en tu entorno de forma
+          segura antes de ejecutar el login; no escribas el token
+          directamente en el comando, no lo guardes en Git y no lo
+          compartas. Usá el alcance mínimo necesario (por ejemplo,
+          lectura para descargar y escritura para publicar) según el
+          método de autenticación elegido.</div>
+        <h3>8.4 Usar la imagen publicada en el YAML</h3>
+        <p>Una vez publicada y accesible para el host, referenciala
+          desde el nodo:</p>
+        <div class="codehead"><span>Fragmento YAML</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>nodes:
+  pcA:
+    kind: linux
+    image: ghcr.io/USUARIO/lab-tools:1.0</code></pre>
+        <p>Si el paquete GHCR es privado, cada host que deba descargarlo
+          necesita autenticarse con permisos de lectura. Para
+          laboratorios compartidos, publicar una imagen solo cuando
+          corresponda y revisar que no contenga credenciales, datos
+          sensibles ni configuraciones internas.</p>
+        <h3>8.5 Buenas prácticas de versionado</h3>
+        <ul>
+          <li>Usá etiquetas explícitas como <code class="inline">1.0</code>,
+            <code class="inline">1.1</code> y <code class="inline">1.2</code>,
+            y describí los cambios en el README o en Releases.</li>
+          <li>Fijá versiones de imágenes para prácticas repetibles;
+            evitá depender sin control de <code class="inline">latest</code>.</li>
+          <li>Versioná YAML, Dockerfile y documentación; no versionés
+            capturas PCAP sensibles, claves, tokens ni artefactos
+            grandes sin necesidad.</li>
+          <li>Incluí instrucciones de despliegue, prueba y destrucción,
+            además de requisitos de RAM, CPU y puertos.</li>
+        </ul>
+      </section>
+      <section id="tips">
+        <div class="kicker">09 · Operación</div>
+        <h2>Tips y troubleshooting</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>La imagen no descarga</h3>
+            <p>Comprobá DNS, conectividad HTTPS al registry, nombre de
+              imagen, tag y permisos del paquete GHCR.</p>
+          </div>
+          <div class="card">
+            <h3>La topología no despliega</h3>
+            <p>Validá indentación YAML, nombres de interfaces, endpoints
+              de enlaces y que el usuario tenga permisos para el
+              runtime.</p>
+          </div>
+          <div class="card">
+            <h3>Los nodos no se hacen ping</h3>
+            <p>Inspeccioná <code>ip -br addr</code>, rutas, estado de
+              interfaces, logs y el nombre real del contenedor.</p>
+          </div>
+          <div class="card">
+            <h3>La GUI no conecta</h3>
+            <p>Verificá estado de la API, endpoint, resolución DNS,
+              firewall, certificado TLS y CORS cuando corresponda.</p>
+          </div>
+          <div class="card">
+            <h3>Falta memoria</h3>
+            <p>Empezá con pocas instancias y herramientas Linux
+              livianas. Supervisá <code>free -h</code>, <code>docker
+                stats</code> y espacio en disco.</p>
+          </div>
+          <div class="card">
+            <h3>Limpiar el laboratorio</h3>
+            <p>Usá <code>containerlab destroy -t archivo.clab.yml</code>
+              y verificá que no queden contenedores o recursos
+              residuales.</p>
+          </div>
+        </div>
+        <h3>Comandos de diagnóstico útiles</h3>
+        <div class="codehead"><span>Operación básica</span><button
+            class="copy" onclick="copyCode(this)">Copiar</button></div>
+        <pre><code>containerlab version
+docker ps -a
+docker images
+docker logs NOMBRE_CONTENEDOR
+docker exec -it NOMBRE_CONTENEDOR ip -br addr
+docker stats
+free -h
+df -h</code></pre>
+        <div class="callout greenbox"><strong>Flujo recomendado:</strong>
+          editar YAML → revisar el diff en Git → desplegar → validar
+          conectividad → guardar resultados/documentación → destruir el
+          laboratorio si ya no se necesita.</div>
+      </section>
+      <section id="fuentes">
+        <div class="kicker">10 · Referencias</div>
+        <h2>Fuentes oficiales y documentación</h2>
+        <p>Usá estas fuentes para verificar los pasos actualizados,
+          versiones soportadas, parámetros de la API y requisitos de
+          cada imagen.</p>
+        <ul>
+          <li><a href="https://containerlab.dev/" target="_blank"
+              rel="noopener">Containerlab — documentación oficial</a></li>
+          <li><a href="https://containerlab.dev/install/"
+              target="_blank" rel="noopener">Containerlab — instalación</a></li>
+          <li><a href="https://containerlab.dev/quickstart/"
+              target="_blank" rel="noopener">Containerlab — quickstart</a></li>
+          <li><a href="https://github.com/srl-labs/containerlab"
+              target="_blank" rel="noopener">Repositorio Containerlab en
+              GitHub</a></li>
+          <li><a href="https://github.com/srl-labs/containerlab-app"
+              target="_blank" rel="noopener">Containerlab App — interfaz
+              web y escritorio</a></li>
+          <li><a href="https://github.com/srl-labs/clab-api-server"
+              target="_blank" rel="noopener">Containerlab API Server —
+              usuarios, grupos y configuración</a></li>
+          <li><a href="https://docs.docker.com/engine/install/debian/"
+              target="_blank" rel="noopener">Docker Engine — instalación
+              en Debian</a></li>
+          <li><a
+href="https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry"
+              target="_blank" rel="noopener">GitHub Docs — Container
+              Registry (GHCR)</a></li>
+          <li><a href="https://github.com/srl-labs/network-multitool"
+              target="_blank" rel="noopener">network-multitool — imagen
+              y proyecto</a></li>
+        </ul>
+        <p class="small">Nota de mantenimiento: esta guía es una
+          referencia práctica. Los comandos, imágenes, tags y
+          procedimientos de autenticación pueden cambiar. Verificá la
+          documentación oficial antes de aplicarlos en un entorno
+          compartido o productivo.</p>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap"><br>
+      </div>
+    </footer>
+    <script>
+function copyCode(button){
+ const pre=button.closest('.codehead').nextElementSibling;
+ const text=pre.innerText;
+ if(navigator.clipboard && window.isSecureContext){
+  navigator.clipboard.writeText(text).then(()=>{const old=button.textContent;button.textContent='Copiado';setTimeout(()=>button.textContent=old,1200);}).catch(()=>fallbackCopy(text,button));
+ }else fallbackCopy(text,button);
+}
+function fallbackCopy(text,button){
+ const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();
+ try{document.execCommand('copy');const old=button.textContent;button.textContent='Copiado';setTimeout(()=>button.textContent=old,1200);}catch(e){button.textContent='Seleccioná el código';}
+ area.remove();
+}
+</script>
+  </body>
+</html>
