@@ -1,0 +1,42 @@
+# ============================================================
+# Redes - Telecomunicaciones B | Trabajo Practico N2
+# Unidad 5.5.2 - Capa de enlace de datos (ARP / ICMP)
+# ============================================================
+#
+#   pcA -------------------- pcB
+#     eth1                    eth1
+#     10.0.7.1/24             10.0.7.2/24
+#     (enlace directo, sin switch intermedio)
+#
+# Si se desea que no expire la terminal ejecutar este comando para mantenerla activa:
+# for i in $(seq 1 120); do printf "."; sleep 30; done & 
+# 
+# ============================================================
+
+name: s07-capa-enlace-ntrigo
+
+mgmt:
+  network: mgmt-ntrigo
+  ipv4-subnet: 172.20.1.0/24
+
+topology:
+  nodes:
+    pcA:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+      binds:
+        - /var/lib/containerlab/labs/ntrigo:/capturas   # <--- Mapea /root/.clab del Host a /capturas en el contenedor
+      exec:
+        - ip addr add 10.0.7.1/24 dev eth1
+        - ip link set eth1 up
+    pcB:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+      binds:
+        - /var/lib/containerlab/labs/ntrigo:/capturas   # <--- Mapea /root/.clab del Host a /capturas en el contenedor
+      exec:
+        - ip addr add 10.0.7.2/24 dev eth1
+        - ip link set eth1 up
+
+  links:
+    - endpoints: ["pcA:eth1", "pcB:eth1"]

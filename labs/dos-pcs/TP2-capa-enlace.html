@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP N&deg;2 &mdash; Capa de Enlace de Datos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --bg-alt: #f2ede4;
+    --panel: #ffffff;
+    --fg: #211c16;
+    --muted: #6b6155;
+    --border: #e4dccd;
+    --accent: #b5502e;
+    --accent-dark: #8a3a1f;
+    --accent-soft: #f3e2d5;
+    --l2: #2f6f5e;
+    --l2-soft: #e1efe9;
+    --l3: #3a5a9b;
+    --l3-soft: #e4eaf7;
+    --warn: #a8721f;
+    --warn-soft: #f6ecd9;
+    --ok: #2f7d4f;
+    --ok-soft: #e2f1e7;
+    --font-head: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-head);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 28px 100px; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    background:
+      linear-gradient(180deg, rgba(181,80,46,0.06), transparent 60%),
+      repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(33,28,22,0.035) 38px, rgba(33,28,22,0.035) 39px);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 28px 40px;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-inner { max-width: 980px; margin: 0 auto; }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-soft);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  h1.title {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
+    line-height: 1.12;
+  }
+  .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 500;
+    margin: 0 0 28px;
+    max-width: 640px;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .meta-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    min-width: 130px;
+  }
+  .meta-chip .k { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); font-weight: 600; }
+  .meta-chip .v { font-size: 15px; font-weight: 700; color: var(--fg); }
+
+  /* ---------- SECTION SCAFFOLDING ---------- */
+  section { padding: 52px 0 8px; border-bottom: 1px solid var(--border); animation: fadeUp .7s ease both; }
+  section:last-of-type { border-bottom: none; }
+  .sec-label {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 22px;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 34px 0 12px;
+    color: var(--fg);
+  }
+  h3 .num { color: var(--accent); font-family: var(--font-mono); margin-right: 8px; }
+  h4 { font-size: 15.5px; font-weight: 700; margin: 20px 0 8px; }
+  p { margin: 0 0 14px; color: #3a352d; }
+  .muted { color: var(--muted); }
+  strong { color: var(--fg); font-weight: 700; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 6px; color: #3a352d; }
+  a { color: var(--accent-dark); }
+
+  /* ---------- CALLOUTS ---------- */
+  .callout {
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    background: var(--panel);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 18px 0;
+  }
+  .callout.pregunta { border-left-color: var(--l3); }
+  .callout.pregunta .cal-tag { color: var(--l3); }
+  .callout.tip { border-left-color: var(--ok); }
+  .callout.tip .cal-tag { color: var(--ok); }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.warn .cal-tag { color: var(--warn); }
+  .cal-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent-dark);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ---------- CODE ---------- */
+  pre {
+    background: #1c1712;
+    color: #f2e9dc;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.65;
+    margin: 14px 0 18px;
+    border: 1px solid #2c2419;
+  }
+  pre .c { color: #8a8071; }
+  code {
+    font-family: var(--font-mono);
+    background: var(--bg-alt);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: var(--accent-dark);
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+  .code-label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    margin: -6px 0 6px;
+    display: block;
+  }
+
+  /* ---------- TABLES ---------- */
+  .table-wrap { overflow-x: auto; margin: 16px 0 22px; border: 1px solid var(--border); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; background: var(--panel); font-size: 14.5px; }
+  th {
+    background: var(--bg-alt);
+    text-align: left;
+    padding: 11px 14px;
+    font-weight: 700;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+  }
+  td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    color: #3a352d;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fbfaf7; }
+  td code, th code { font-size: 0.85em; }
+
+  /* ---------- STEP CARDS ---------- */
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+    margin: 18px 0;
+  }
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .step-body { padding-top: 4px; }
+  .step-body h4 { margin: 0 0 6px; }
+
+  /* ---------- FRAME LAYER DIAGRAM ---------- */
+  .frame-diagram {
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 18px 0 8px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .frame-field {
+    padding: 14px 12px;
+    border-right: 1px solid var(--border);
+    flex: 1 1 auto;
+    min-width: 100px;
+  }
+  .frame-field:last-child { border-right: none; }
+  .frame-field .fname { font-weight: 700; display: block; margin-bottom: 4px; }
+  .frame-field .fsize { color: var(--muted); font-size: 11px; }
+  .frame-field.mac-dst { background: var(--l2-soft); color: var(--l2); }
+  .frame-field.mac-src { background: var(--l2-soft); color: var(--l2); }
+  .frame-field.etype { background: var(--warn-soft); color: var(--warn); flex: 0 1 90px; }
+  .frame-field.payload { background: var(--l3-soft); color: var(--l3); flex: 2 1 200px; }
+  .frame-field.fcs { background: #efe9e0; color: var(--muted); flex: 0 1 90px; }
+
+  /* ---------- TOPOLOGY BOX ---------- */
+  .topo-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 18px 0;
+  }
+  .topo-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    padding: 20px 0 26px;
+    flex-wrap: wrap;
+  }
+  .topo-node {
+    background: var(--l3-soft);
+    border: 1.5px solid var(--l3);
+    color: var(--l3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    text-align: center;
+    font-weight: 700;
+    min-width: 110px;
+  }
+  .topo-node.switch { background: var(--l2-soft); border-color: var(--l2); color: var(--l2); }
+  .topo-node small { display: block; font-weight: 500; color: var(--muted); margin-top: 4px; font-size: 11.5px; }
+  .topo-line { width: 46px; height: 2px; background: var(--border); position: relative; }
+  .topo-line::after {
+    content: '';
+    position: absolute; top: -3px; left: 50%; transform: translateX(-50%);
+    font-size: 10px;
+  }
+
+  /* ---------- ACTIVITY CARDS ---------- */
+  .activity-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 26px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .activity-card::before {
+    content: attr(data-tag);
+    position: absolute;
+    top: -11px; left: 22px;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .activity-card h4 { margin-top: 4px; font-size: 18px; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--bg-alt);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ---------- BINGO GRID ---------- */
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .bingo-cell {
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 14px 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    background: #fbfaf7;
+  }
+  .bingo-cell .bfield { font-family: var(--font-mono); color: var(--accent-dark); display: block; margin-bottom: 3px; font-size: 12.5px;}
+
+  /* ---------- OBJECTIVES GRID ---------- */
+  .obj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 18px 0; }
+  .obj-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+  .obj-card .otype {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+    color: var(--accent-dark);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .obj-card ul { padding-left: 18px; margin: 0; }
+  .obj-card li { font-size: 13.5px; margin-bottom: 8px; color: #3a352d; }
+
+  /* ---------- RUBRIC ---------- */
+  .rubric-wrap { overflow-x: auto; }
+  table.rubric { min-width: 760px; }
+  table.rubric th.crit-col { min-width: 190px; }
+  .score-cell { font-family: var(--font-mono); font-weight: 700; }
+  .lvl-4 { color: var(--ok); }
+  .lvl-3 { color: var(--l3); }
+  .lvl-2 { color: var(--warn); }
+  .lvl-1 { color: var(--accent-dark); }
+
+  /* ---------- TOC ---------- */
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 26px 0 0;
+  }
+  .toc a {
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--fg);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 7px 13px;
+    border-radius: 999px;
+  }
+  .toc a span { color: var(--accent); margin-right: 5px; }
+
+  /* ---------- TIMELINE ---------- */
+  .timeline { display: flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 16px 0; }
+  .tl-block { flex: 1; padding: 14px 12px; border-right: 1px solid var(--border); }
+  .tl-block:last-child { border-right: none; }
+  .tl-block .tl-min { font-family: var(--font-mono); font-size: 11px; color: var(--muted); font-weight: 700; }
+  .tl-block .tl-title { font-weight: 700; font-size: 13.5px; margin: 4px 0 2px; }
+  .tl-block.b1 { background: var(--accent-soft); }
+  .tl-block.b2 { background: var(--l2-soft); }
+  .tl-block.b3 { background: var(--l3-soft); }
+  .tl-block.b4 { background: var(--warn-soft); }
+  .tl-block.b5 { background: var(--ok-soft); }
+
+  footer {
+    max-width: 980px; margin: 0 auto; padding: 40px 28px 60px;
+    color: var(--muted); font-size: 13px; border-top: 1px solid var(--border);
+    margin-top: 30px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 720px) {
+    h1.title { font-size: 30px; }
+    .obj-grid { grid-template-columns: 1fr; }
+    .bingo-grid { grid-template-columns: repeat(2, 1fr); }
+    table.rubric { min-width: 620px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <span class="kicker">&#9670; Unidad 5.5.2 &mdash; Capa de Enlace de Datos</span>
+    <h1 class="title">Redes &mdash; Telecomunicaciones B<br>Trabajo Pr&aacute;ctico N&deg;2</h1>
+    <p class="subtitle">Tramas, direccionamiento MAC, ARP e ICMP en un enlace punto a punto. Primer contacto pr&aacute;ctico con Containerlab y TopoViewer.</p>
+    <div class="hero-meta">
+      <div class="meta-chip"><span class="k">Duraci&oacute;n</span><span class="v">90 minutos</span></div>
+      <div class="meta-chip"><span class="k">Modalidad</span><span class="v">Individual / Grupal (VM compartida)</span></div>
+      <div class="meta-chip"><span class="k">Plataforma</span><span class="v">Containerlab + TopoViewer</span></div>
+      <div class="meta-chip"><span class="k">Topolog&iacute;a</span><span class="v">s07-capa-enlace</span></div>
+    </div>
+    <div class="toc">
+      <a href="#s1"><span>01</span>Plataforma y teor&iacute;a</a>
+      <a href="#s2"><span>02</span>Topolog&iacute;a</a>
+      <a href="#s3"><span>03</span>Desarrollo del TP</a>
+      <a href="#s4"><span>04</span>Actividades</a>
+      <a href="#s5"><span>05</span>Objetivos y r&uacute;brica</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ============================================================ -->
+<!-- SECCION 1                                                     -->
+<!-- ============================================================ -->
+<section id="s1">
+  <div class="sec-label">Secci&oacute;n 01</div>
+  <h2>Introducci&oacute;n te&oacute;rica y gu&iacute;a de plataforma</h2>
+
+  <h3><span class="num">1.1</span>&iquest;Qu&eacute; es Containerlab?</h3>
+  <p>Containerlab es una herramienta de c&oacute;digo abierto que permite definir topolog&iacute;as de red completas &mdash;routers, switches, hosts y sus enlaces&mdash; en un simple archivo de texto (YAML) y desplegarlas en segundos usando <strong>contenedores Linux</strong> en lugar de m&aacute;quinas virtuales completas. Cada nodo de la topolog&iacute;a (<code>pcA</code>, <code>pcB</code>, etc.) es un contenedor liviano con su propia pila de red aislada: sus propias interfaces, tablas ARP, tablas de rutas y contadores de tr&aacute;fico, aunque comparta el mismo kernel del host f&iacute;sico o VM.</p>
+  <p>La clave conceptual es el <strong>namespace de red de Linux</strong>: cada contenedor vive en un espacio de nombres de red propio, por lo que dos laboratorios distintos pueden usar exactamente el mismo rango de direcciones IP (por ejemplo <code>10.0.7.0/24</code>) en la misma VM f&iacute;sica sin que el tr&aacute;fico de uno se filtre al otro.</p>
+
+  <h3><span class="num">1.2</span>&iquest;Qu&eacute; es TopoViewer?</h3>
+  <p>TopoViewer es la interfaz gr&aacute;fica web de Containerlab: dibuja autom&aacute;ticamente la topolog&iacute;a declarada en el YAML como un diagrama interactivo, permite abrir una terminal a cada nodo directamente desde el navegador, inspeccionar el estado de los enlaces y lanzar capturas de paquetes (Edgeshark) con un clic sobre la interfaz que se quiere observar. No reemplaza a Containerlab: es una capa visual que consulta el mismo motor por debajo.</p>
+
+  <div class="callout warn">
+    <span class="cal-tag">&#9888; El archivo YAML de este TP <strong>no usa variables de entorno en tiempo de despliegue</strong>: cada estudiante debe <strong>editar el archivo a mano</strong> antes de subirlo/desplegarlo, reemplazando los marcadores <code>${USER_ID}</code> y <code>${OCTET}</code> por sus valores propios &mdash;ver Secci&oacute;n 2.1&mdash; para no interferir con los laboratorios de sus compa&ntilde;eros en la misma VM compartida.</p>
+  </div>
+
+  <h3><span class="num">1.3</span>Ciclo de vida de la topolog&iacute;a</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Editar el YAML propio y desplegar (deploy)</h4>
+      <p>Antes de desplegar, cada estudiante reemplaza en su copia del archivo <code>s07-capa-enlace.clab.yml</code> los marcadores <code>${USER_ID}</code> y <code>${OCTET}</code> por sus valores asignados (ver tabla en 2.1). El deploy crea los contenedores, el enlace virtual (veth) entre <code>pcA</code> y <code>pcB</code>, y ejecuta los comandos de inicializaci&oacute;n (asignaci&oacute;n de IP, instalaci&oacute;n de paquetes). Se realiza desde <strong>TopoViewer</strong>, sin necesidad de una terminal Linux propia:</p>
+      <pre><code><span class="c">// Ejemplo: alumno con USER_ID=user7, OCTET=7
+// antes de desplegar, en el YAML propio reemplazar:</span>
+name: s07-capa-enlace-user7
+mgmt:
+  network: mgmt-user7
+  ipv4-subnet: 172.20.7.0/24</code></pre>
+      <p class="muted" style="font-size:13px;">Si el docente habilita una terminal de la VM para el curso, el equivalente por l&iacute;nea de comandos es <code>clab deploy -t s07-capa-enlace.clab.yml</code> ejecutado sobre el archivo ya editado &mdash;pero no es el flujo esperado para este TP.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Visualizar en TopoViewer</h4>
+      <p>Abrir el navegador apuntando a la URL de TopoViewer de la VM, iniciar sesi&oacute;n con el usuario asignado y localizar la tarjeta de topolog&iacute;a <code>s07-capa-enlace-user7</code> (reemplazando por el N&deg; de usuario propio). Un clic sobre cada nodo abre su consola; un clic sobre el enlace entre <code>pcA</code> y <code>pcB</code> permite iniciar captura con Edgeshark.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Inspeccionar el estado</h4>
+      <p>Desde TopoViewer, la vista de la topolog&iacute;a propia ya muestra el estado de cada nodo (<code>running</code>) y sus interfaces. Si se cuenta con terminal de la VM, el equivalente es:</p>
+      <pre><code>clab inspect -t s07-capa-enlace.clab.yml</code></pre>
+      <p>Muestra los contenedores de <em>esa</em> topolog&iacute;a con su estado, direcci&oacute;n IP de gesti&oacute;n y puertos.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Pausar / detener nodos puntuales (opcional)</h4>
+      <p>&Uacute;til si se necesita congelar el estado de un nodo sin destruir todo el laboratorio. Puede realizarse desde las acciones de nodo disponibles en TopoViewer.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Destruir el laboratorio</h4>
+      <p><strong>Paso obligatorio al finalizar</strong>: desde TopoViewer, usar la acci&oacute;n de destruir sobre la topolog&iacute;a propia (<code>s07-capa-enlace-userN</code>). Al ser una VM compartida hasta por 15 estudiantes, dejar contenedores hu&eacute;rfanos acumula uso de CPU/RAM y afecta el rendimiento de los compa&ntilde;eros que siguen trabajando.</p>
+    </div>
+  </div>
+
+  <h3><span class="num">1.4</span>Repaso: Capa 1 (F&iacute;sica) y Capa 2 (Enlace)</h3>
+  <p>La <strong>Capa F&iacute;sica</strong> se ocupa de transmitir bits crudos sobre el medio (cable, fibra, radio): voltajes, tiempos de bit, conectores. La <strong>Capa de Enlace</strong> toma esos bits y los organiza en unidades con sentido llamadas <strong>tramas</strong> (frames), agregando direccionamiento local (MAC) y detecci&oacute;n de errores para que dos equipos en el mismo segmento f&iacute;sico puedan intercambiar informaci&oacute;n de forma confiable.</p>
+
+  <h4>Estructura de una trama Ethernet II</h4>
+  <div class="frame-diagram">
+    <div class="frame-field mac-dst"><span class="fname">MAC Destino</span><span class="fsize">6 bytes</span></div>
+    <div class="frame-field mac-src"><span class="fname">MAC Origen</span><span class="fsize">6 bytes</span></div>
+    <div class="frame-field etype"><span class="fname">EtherType</span><span class="fsize">2 bytes</span></div>
+    <div class="frame-field payload"><span class="fname">Carga &uacute;til (payload)</span><span class="fsize">46&ndash;1500 bytes</span></div>
+    <div class="frame-field fcs"><span class="fname">FCS (CRC)</span><span class="fsize">4 bytes</span></div>
+  </div>
+  <p class="muted" style="font-size:13px;">El pre&aacute;mbulo (7 bytes) + SFD (1 byte) tambi&eacute;n forman parte de la se&ntilde;al f&iacute;sica pero se consumen antes de que la trama llegue a la capa de captura del sistema operativo &mdash;ver pregunta gu&iacute;a en la Parte 1 del desarrollo.</p>
+
+  <ul>
+    <li><strong>Direcci&oacute;n MAC unicast</strong>: identifica a una &uacute;nica interfaz de red (ej: <code>02:42:0a:00:07:01</code>). El bit menos significativo del primer octeto es <code>0</code>.</li>
+    <li><strong>Direcci&oacute;n MAC broadcast</strong>: <code>FF:FF:FF:FF:FF:FF</code> &mdash;significa &laquo;para todos los equipos del dominio de broadcast&raquo;. La usa ARP para preguntar &laquo;&iquest;qui&eacute;n tiene esta IP?&raquo; sin saber a&uacute;n la MAC del destinatario.</li>
+    <li><strong>EtherType</strong>: indica qu&eacute; protocolo viaja dentro de la trama. Los dos valores centrales de este TP son <code>0x0806</code> (ARP) y <code>0x0800</code> (IPv4, que a su vez transporta ICMP).</li>
+  </ul>
+
+  <h3><span class="num">1.5</span>ARP: el protocolo de transici&oacute;n L2 &harr; L3</h3>
+  <p>Un host conoce la <strong>IP</strong> de su destino (Capa 3) pero, para poder poner esa informaci&oacute;n dentro de una trama, necesita tambi&eacute;n la <strong>MAC</strong> del destino en el mismo segmento (Capa 2). <strong>ARP (Address Resolution Protocol)</strong> es exactamente el protocolo que resuelve esa incognita: traduce &laquo;IP conocida&raquo; en &laquo;MAC necesaria para armar la trama&raquo;.</p>
+  <ul>
+    <li><strong>ARP Request</strong>: se env&iacute;a en <strong>broadcast</strong> (MAC destino <code>FF:FF:FF:FF:FF:FF</code>) preguntando &laquo;&iquest;Qui&eacute;n tiene la IP 10.0.7.2? Dec&iacute;rselo a 10.0.7.1&raquo;.</li>
+    <li><strong>ARP Reply</strong>: el due&ntilde;o de esa IP responde en <strong>unicast</strong>, directamente a quien pregunt&oacute;, informando su MAC.</li>
+    <li>Cada host guarda el resultado en su <strong>cach&eacute; ARP</strong> (<code>ip neigh</code> / <code>arp -a</code>) por un tiempo, para no repetir la consulta en cada paquete.</li>
+  </ul>
+  <p>Por eso ARP se describe como el &laquo;conector&raquo; entre Capa 2 y Capa 3: sin &eacute;l, un datagrama IP nunca podr&iacute;a bajar a una trama Ethernet v&aacute;lida dentro de la LAN. En este TP, al ser un enlace punto a punto entre solo dos hosts, el ARP Request en broadcast igualmente solo tiene un destinatario posible &mdash;pero el mecanismo es id&eacute;ntico al de una LAN con muchos equipos.</p>
+
+  <h3><span class="num">1.6</span>ICMP: el protocolo de diagn&oacute;stico</h3>
+  <p><strong>ICMP (Internet Control Message Protocol)</strong> viaja encapsulado dentro de IP (EtherType <code>0x0800</code> &rarr; protocolo IP n&uacute;mero 1) y se usa para reportar condiciones de la red y realizar diagn&oacute;sticos. El comando <code>ping</code> es la herramienta m&aacute;s conocida que lo utiliza:</p>
+  <ul>
+    <li><strong>Echo Request</strong> (tipo 8): el emisor pregunta &laquo;&iquest;est&aacute;s ah&iacute;?&raquo;.</li>
+    <li><strong>Echo Reply</strong> (tipo 0): el receptor confirma que recibi&oacute; el mensaje.</li>
+  </ul>
+  <p>Cada Echo Request/Reply lleva un n&uacute;mero de secuencia (<code>seq</code>) y un TTL (Time To Live), &uacute;til para distinguir p&eacute;rdidas, duplicados o problemas de enrutamiento aunque en este TP el escenario sea de un &uacute;nico salto L2.</p>
+
+  <div class="callout pregunta">
+    <span class="cal-tag">&#9998; Para pensar antes de empezar</span>
+    <p>Antes de un <code>ping</code> entre dos hosts que nunca se comunicaron, &iquest;qu&eacute; protocolo se ejecuta primero: ARP o ICMP? &iquest;Por qu&eacute; es imposible el orden inverso en una LAN Ethernet?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECCION 2                                                     -->
+<!-- ============================================================ -->
+<section id="s2">
+  <div class="sec-label">Secci&oacute;n 02</div>
+  <h2>Estructura de la topolog&iacute;a</h2>
+
+  <p>El escenario del laboratorio son dos PCs conectadas <strong>directamente entre s&iacute;</strong> mediante un enlace punto a punto (sin switch intermedio). Esto simplifica al m&aacute;ximo la observaci&oacute;n del intercambio de tramas: todo lo que sale de <code>pcA</code> por su interfaz llega sin intermediarios a <code>pcB</code>, lo que permite enfocar el an&aacute;lisis exclusivamente en la estructura de la trama, ARP e ICMP sin la variable adicional del aprendizaje de MACs por parte de un switch.</p>
+
+  <div class="topo-box">
+    <div class="topo-diagram">
+      <div class="topo-node">pcA<small>eth1<br>10.0.7.1/24</small></div>
+      <div class="topo-line"></div>
+      <div class="topo-node">pcB<small>eth1<br>10.0.7.2/24</small></div>
+    </div>
+    <p class="muted" style="text-align:center;font-size:13px;margin:0;">Instancia por estudiante: <code>s07-capa-enlace-userN</code> &mdash; misma subred <code>10.0.7.0/24</code> en las 15 instancias, aisladas por namespace. Enlace directo pcA&harr;pcB, sin switch intermedio.</p>
+  </div>
+
+  <h3><span class="num">2.1</span>Aislamiento y edici&oacute;n manual del YAML propio</h3>
+  <p>Como los estudiantes trabajan sobre <strong>una sola VM compartida</strong> y <strong>no tienen acceso a su terminal Linux</strong> para exportar variables de entorno antes del deploy, el archivo <code>.clab.yml</code> se entrega como <strong>plantilla con marcadores de texto</strong>: <code>${USER_ID}</code> (identifica al estudiante: <code>user1</code>&hellip;<code>user15</code>) y <code>${OCTET}</code> (evita que las redes docker de gesti&oacute;n de los 15 laboratorios se superpongan). <strong>Cada estudiante debe reemplazar estos dos marcadores directamente en su copia del archivo YAML</strong>, a mano, antes de desplegar desde TopoViewer. La subred de datos <code>10.0.7.0/24</code> puede dejarse igual en las 15 instancias porque cada contenedor vive en un namespace de red propio.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Marcador en el YAML</th><th>Prop&oacute;sito</th><th>Reemplazar por (ejemplo user7)</th></tr></thead>
+      <tbody>
+        <tr><td><code>${USER_ID}</code></td><td>Sufijo del nombre de topolog&iacute;a &rarr; aisla contenedores y nombres de red de gesti&oacute;n</td><td><code>user7</code></td></tr>
+        <tr><td><code>${OCTET}</code></td><td>Tercer octeto de la red de gesti&oacute;n Docker &rarr; evita choque de subredes de management</td><td><code>7</code> &rarr; <code>172.20.7.0/24</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <span class="cal-tag">&#9888; Antes de desplegar</span>
+    <p>Verificar que <strong>ambas</strong> apariciones de cada marcador queden reemplazadas: <code>${USER_ID}</code> aparece en <code>name</code> y en <code>mgmt.network</code>; <code>${OCTET}</code> aparece en <code>mgmt.ipv4-subnet</code>. Usar el N&deg; de usuario asignado por el docente para ambos valores (por ejemplo, alumno 7 &rarr; <code>user7</code> / <code>7</code>) evita choques con el resto del curso en la misma VM.</p>
+  </div>
+
+  <h3><span class="num">2.2</span>Archivo plantilla &mdash; <code>s07-capa-enlace.clab.yml</code></h3>
+  <span class="code-label">Copiar y editar los dos marcadores (${USER_ID}, ${OCTET}) por los valores propios antes de desplegar desde TopoViewer.</span>
+  <pre><code><span class="c"># ============================================================
+# Redes - Telecomunicaciones B | Trabajo Practico N2
+# Unidad 5.5.2 - Capa de enlace de datos (ARP / ICMP)
+# ============================================================
+#
+#   pcA -------------------- pcB
+#     eth1                    eth1
+#     10.0.7.1/24             10.0.7.2/24
+#     (enlace directo, sin switch intermedio)
+#
+# Plantilla multiusuario: reemplazar a mano ${USER_ID} y ${OCTET}
+# en este archivo ANTES de desplegar desde TopoViewer.
+# No requiere exportar variables de entorno ni acceso a shell.
+# ============================================================</span>
+
+name: s07-capa-enlace-${USER_ID}
+
+mgmt:
+  network: mgmt-${USER_ID}
+  ipv4-subnet: 172.20.${OCTET}.0/24
+
+topology:
+  nodes:
+    pcA:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+      exec:
+        - ip addr add 10.0.7.1/24 dev eth1
+        - ip link set eth1 up
+        - apt-get update
+        - apt-get install -y iproute2 tcpdump iputils-ping arping net-tools
+
+    pcB:
+      kind: linux
+      image: ghcr.io/srl-labs/network-multitool
+      exec:
+        - ip addr add 10.0.7.2/24 dev eth1
+        - ip link set eth1 up
+        - apt-get update
+        - apt-get install -y iproute2 tcpdump iputils-ping arping net-tools
+
+  links:
+    - endpoints: ["pcA:eth1", "pcB:eth1"]</code></pre>
+
+  <div class="callout tip">
+    <span class="cal-tag">&#9873; Sobre los paquetes instalados</span>
+    <p>La imagen <code>network-multitool</code> ya incluye la mayor&iacute;a de las herramientas de diagn&oacute;stico. El bloque <code>exec</code> con <code>apt-get install</code> garantiza expl&iacute;citamente la disponibilidad de <code>iproute2</code> (comando <code>tc</code>/netem, usado en pr&aacute;cticas de degradaci&oacute;n de enlace), <code>tcpdump</code> (captura de tramas), <code>arping</code> / <code>iputils-ping</code> (pruebas de Capa 2/3) y <code>net-tools</code> (<code>ifconfig</code>, <code>arp -a</code> en su forma cl&aacute;sica).</p>
+  </div>
+
+
+<!-- ============================================================ -->
+<!-- SECCION 3                                                     -->
+<!-- ============================================================ -->
+<section id="s3">
+  <div class="sec-label">Secci&oacute;n 03</div>
+  <h2>Desarrollo paso a paso del laboratorio</h2>
+  <p class="muted">Duraci&oacute;n estimada de esta secci&oacute;n: ~55 minutos sobre el total de 90. Trabajar &uacute;nicamente dentro de la instancia propia (<code>s07-capa-enlace-userN</code>), ya editada con el <code>USER_ID</code> y <code>OCTET</code> propios.</p>
+
+  <div class="timeline">
+    <div class="tl-block b1"><span class="tl-min">0&ndash;10 min</span><div class="tl-title">Intro + deploy</div></div>
+    <div class="tl-block b2"><span class="tl-min">10&ndash;30 min</span><div class="tl-title">Parte 1 &mdash; Trama y ARP</div></div>
+    <div class="tl-block b3"><span class="tl-min">30&ndash;45 min</span><div class="tl-title">Parte 2 &mdash; Contadores</div></div>
+    <div class="tl-block b4"><span class="tl-min">45&ndash;70 min</span><div class="tl-title">Actividades motivadoras</div></div>
+    <div class="tl-block b5"><span class="tl-min">70&ndash;90 min</span><div class="tl-title">Cierre + destroy</div></div>
+  </div>
+
+  <h3><span class="num">3.1</span>Parte 1 &mdash; La trama, su delimitaci&oacute;n y ARP</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h4>Limpiar la cach&eacute; ARP y capturar en pcB</h4>
+      <p>Para forzar que se genere un intercambio ARP visible, limpiar primero la tabla de vecinos. Abrir la consola de <code>pcB</code> desde TopoViewer:</p>
+      <pre><code><span class="c"># en pcB</span>
+ip neigh flush all
+tcpdump -i eth1 -e -n -w /tmp/enlace.pcap</code></pre>
+      <p>Desde la consola de <code>pcA</code> (otra pesta&ntilde;a/terminal en TopoViewer):</p>
+      <pre><code><span class="c"># en pcA</span>
+ip neigh flush all
+ping -c 5 10.0.7.2</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h4>Analizar la captura completa</h4>
+      <pre><code>tcpdump -r /tmp/enlace.pcap -e -n -vv</code></pre>
+      <p>Deber&iacute;an aparecer, en orden: 1 <strong>ARP Request</strong> (broadcast), 1 <strong>ARP Reply</strong> (unicast), y luego los 5 pares <strong>ICMP Echo Request / Echo Reply</strong>. Identificar en cada trama Ethernet:</p>
+      <ul>
+        <li>MAC destino (6 bytes) &mdash; comparar <code>ff:ff:ff:ff:ff:ff</code> del ARP Request contra la MAC unicast de los Echo Request.</li>
+        <li>MAC origen (6 bytes)</li>
+        <li>EtherType &mdash; <code>0x0806</code> en las tramas ARP vs. <code>0x0800</code> en las tramas ICMP/IP.</li>
+        <li>Carga &uacute;til: en ARP, IP y MAC solicitadas/ofrecidas; en ICMP, tipo (8 o 0), <code>seq</code> y TTL.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h4>Aislar solo el intercambio ARP</h4>
+      <pre><code>tcpdump -r /tmp/enlace.pcap -e -n arp</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h4>Inspeccionar la cach&eacute; ARP resultante</h4>
+      <pre><code><span class="c"># en pcA, luego del ping</span>
+ip neigh show
+arp -a</code></pre>
+      <p>Confirmar que la entrada para <code>10.0.7.2</code> qued&oacute; en estado <code>REACHABLE</code> o <code>STALE</code>, con la MAC aprendida durante el ARP Reply.</p>
+    </div>
+  </div>
+
+  <div class="callout pregunta">
+    <span class="cal-tag">&#9998; Pregunta gu&iacute;a</span>
+    <p>El pre&aacute;mbulo y el campo FCS (CRC) <strong>no aparecen</strong> en la captura de <code>tcpdump</code>. &iquest;Por qu&eacute;? &iquest;Qui&eacute;n agrega estos campos y qui&eacute;n los verifica?</p>
+    <p style="margin-top:8px;"><em>Pista:</em> pensar en qu&eacute; capa del modelo OSI act&uacute;a la NIC (tarjeta de red) versus en qu&eacute; punto del sistema operativo se engancha <code>tcpdump</code> para copiar las tramas.</p>
+  </div>
+
+  <div class="callout pregunta">
+    <span class="cal-tag">&#9998; Pregunta gu&iacute;a</span>
+    <p>&iquest;Por qu&eacute; el ARP Request se env&iacute;a en broadcast y no directamente en unicast, aun cuando en este enlace punto a punto solo hay un destinatario posible? &iquest;Qu&eacute; tendr&iacute;a que saber de antemano el emisor para poder mandarlo en unicast, y por qu&eacute; justamente eso es lo que falta?</p>
+  </div>
+
+  <h3><span class="num">3.2</span>Parte 2 &mdash; Contadores de error de la interfaz</h3>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h4>Ver estad&iacute;sticas de la interfaz en ambos hosts</h4>
+      <pre><code>ip -s link show eth1</code></pre>
+      <p>Anotar en una tabla propia: paquetes TX/RX, bytes, errores y descartes (<code>dropped</code>) <strong>antes</strong> de cualquier degradaci&oacute;n artificial &mdash;deber&iacute;an ser 0 en un enlace limpio reci&eacute;n desplegado.</p>
+    </div>
+  </div>
+
+  <h3><span class="num">3.3</span>Parte 3 &mdash; ICMP como herramienta de diagn&oacute;stico continuo</h3>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h4>Ping extendido con estad&iacute;stica</h4>
+      <pre><code><span class="c"># en pcA</span>
+ping -c 20 10.0.7.2</code></pre>
+      <p>El resumen final (<code>N packets transmitted, N received, 0% packet loss, ...</code>) es la base estad&iacute;stica que se va a usar en la Actividad 1 (Secci&oacute;n 4).</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <span class="cal-tag">&#9873; Este bloque se ampl&iacute;a en 3.4</span>
+    <p>Este TP se enfoca en la <strong>estructura</strong> de la trama y en ARP/ICMP como protocolos base. Pero además se intenta profundizar en control de errores por retransmisi&oacute;n (ARQ)</p>
+  </div>
+
+  <h3><span class="num">3.4</span>Extensi&oacute;n opcional &mdash; ARQ, <code>tc netem</code> e <code>iperf3</code></h3>
+  <p class="muted">Esta subsecci&oacute;n retoma integralmente la Parte 3 y 4 del laboratorio base <code>s07-capa-enlace</code>. No es de resoluci&oacute;n obligatoria dentro de la clase de 90 minutos: qued&oacute; disponible para quien termine antes, como gu&iacute;a de repaso, o como continuaci&oacute;n asignada para el laboratorio de la semana siguiente.</p>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h4>Caudal sin degradaci&oacute;n (l&iacute;nea de base)</h4>
+      <pre><code><span class="c"># en pcB (servidor)</span>
+iperf3 -s
+
+<span class="c"># en pcA (cliente)</span>
+iperf3 -c 10.0.7.2 -t 10</code></pre>
+      <p>Anotar el caudal obtenido (Mbps) y los <code>retransmits</code> reportados por <code>iperf3</code>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">8</div>
+    <div class="step-body">
+      <h4>Degradar el enlace con 10% de p&eacute;rdida y repetir</h4>
+      <pre><code><span class="c"># en pcA</span>
+tc qdisc add dev eth1 root netem loss 10%
+iperf3 -c 10.0.7.2 -t 10</code></pre>
+      <div class="callout pregunta" style="margin-top:10px;">
+        <span class="cal-tag">&#9998; Pregunta gu&iacute;a</span>
+        <p>El caudal cae mucho m&aacute;s que un 10%. &iquest;Por qu&eacute;? Relacionar con el mecanismo de ARQ y con el hecho de que cada retransmisi&oacute;n consume tiempo del enlace.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <h4>Comparar TCP contra UDP bajo la misma degradaci&oacute;n</h4>
+      <pre><code><span class="c"># en pcB</span>
+iperf3 -s
+
+<span class="c"># en pcA</span>
+iperf3 -c 10.0.7.2 -u -b 10M -t 10</code></pre>
+      <div class="callout pregunta" style="margin-top:10px;">
+        <span class="cal-tag">&#9998; Pregunta gu&iacute;a</span>
+        <p>UDP mantiene el caudal pero pierde datagramas; TCP conserva los datos pero pierde velocidad. &iquest;Cu&aacute;l de los dos implementa control de errores por retransmisi&oacute;n? &iquest;Qu&eacute; compromiso de ingenier&iacute;a representa cada uno?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">10</div>
+    <div class="step-body">
+      <h4>Aumentar la degradaci&oacute;n progresivamente y tabular</h4>
+      <pre><code>tc qdisc change dev eth1 root netem loss 20%
+<span class="c"># repetir iperf3 -c 10.0.7.2 -t 10</span>
+
+tc qdisc change dev eth1 root netem loss 40%
+<span class="c"># repetir iperf3 -c 10.0.7.2 -t 10</span></code></pre>
+      <p>Construir una tabla p&eacute;rdida (%) vs. caudal TCP (Mbps) y graficarla.</p>
+      <div class="callout pregunta" style="margin-top:10px;">
+        <span class="cal-tag">&#9998; Pregunta gu&iacute;a</span>
+        <p>&iquest;Es una relaci&oacute;n lineal entre p&eacute;rdida configurada y ca&iacute;da de caudal?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">11</div>
+    <div class="step-body">
+      <h4>Retardo y ventana deslizante</h4>
+      <pre><code><span class="c"># quitar la perdida e introducir retardo</span>
+tc qdisc del dev eth1 root
+tc qdisc add dev eth1 root netem delay 200ms
+
+<span class="c"># medir nuevamente</span>
+iperf3 -c 10.0.7.2 -t 10</code></pre>
+      <div class="callout pregunta" style="margin-top:10px;">
+        <span class="cal-tag">&#9998; Pregunta gu&iacute;a</span>
+        <p>El enlace no perdi&oacute; capacidad, solo se hizo m&aacute;s &laquo;largo&raquo;. &iquest;Por qu&eacute; cae el caudal? Relacionar con el producto retardo por ancho de banda y con el tama&ntilde;o de ventana necesario para mantener el enlace lleno.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">12</div>
+    <div class="step-body">
+      <h4>Restaurar el enlace</h4>
+      <pre><code>tc qdisc del dev eth1 root</code></pre>
+    </div>
+  </div>
+
+  <h3><span class="num">3.5</span>Cierre de la sesi&oacute;n</h3>
+  <div class="step">
+    <div class="step-num">13</div>
+    <div class="step-body">
+      <h4>Destruir el laboratorio propio</h4>
+      <p>Desde TopoViewer, usar la acci&oacute;n de destruir sobre la topolog&iacute;a propia <code>s07-capa-enlace-userN</code>. Si se cuenta con terminal de la VM sobre el archivo ya editado:</p>
+      <pre><code>clab destroy -t s07-capa-enlace.clab.yml --cleanup</code></pre>
+      <p>Cada estudiante destruye <strong>&uacute;nicamente</strong> su instancia (la que lleva su <code>USER_ID</code> propio en el nombre). Nunca intervenir sobre la topolog&iacute;a de otro compa&ntilde;ero.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECCION 4                                                     -->
+<!-- ============================================================ -->
+<section id="s4">
+  <div class="sec-label">Secci&oacute;n 04</div>
+  <h2>Actividades motivadoras</h2>
+  <p>Dos din&aacute;micas breves para cerrar la clase con an&aacute;lisis activo, dise&ntilde;adas para los &uacute;ltimos ~25 minutos de la sesi&oacute;n.</p>
+
+  <div class="activity-card" data-tag="Actividad 1 &middot; en parejas">
+    <h4>Carrera de p&eacute;rdida de paquetes</h4>
+    <div class="badge-row">
+      <span class="badge">tc netem loss</span>
+      <span class="badge">ping -c 20</span>
+      <span class="badge">an&aacute;lisis estad&iacute;stico</span>
+    </div>
+    <p>Cada integrante de la pareja trabaja sobre su propia instancia, pero coordinan entre s&iacute; el ejercicio:</p>
+    <ol>
+      <li>El estudiante&nbsp;1 elige en secreto un porcentaje de p&eacute;rdida (5%, 10%, 20%, 30%&hellip;) y lo aplica en <strong>su propio</strong> <code>pcA</code>: <code>tc qdisc add dev eth1 root netem loss X%</code>.</li>
+      <li>Le indica al estudiante&nbsp;2 &uacute;nicamente <em>&laquo;ya est&aacute; degradado&raquo;</em>, sin revelar el valor.</li>
+      <li>Como no comparten topolog&iacute;a (cada uno tiene la suya), el estudiante&nbsp;1 comparte por chat/verbalmente los resultados crudos: cu&aacute;ntos de los 20 <code>ping</code> se perdieron.</li>
+      <li>El estudiante&nbsp;2 corre <code>ping -c 20 10.0.7.2</code> <strong>en su propia instancia sin degradaci&oacute;n</strong> como control, y luego recibe el conteo de paquetes perdidos del compa&ntilde;ero para estimar el % aplicado: <code>p&eacute;rdida estimada = (perdidos / 20) &times; 100</code>.</li>
+      <li>Se revela el valor real y se compara el error de estimaci&oacute;n. Se repite 2&ndash;3 rondas con distintos porcentajes.</li>
+    </ol>
+    <div class="callout pregunta" style="margin-top:14px;">
+      <span class="cal-tag">&#9998; Cierre de la actividad</span>
+      <p>Con solo 20 muestras, &iquest;cu&aacute;nto puede variar la estimaci&oacute;n de una corrida a otra aunque el % configurado sea siempre el mismo? &iquest;Qu&eacute; pasar&iacute;a con la precisi&oacute;n si se usaran 200 pings en vez de 20?</p>
+    </div>
+  </div>
+
+  <div class="activity-card" data-tag="Actividad 2 &middot; individual">
+    <h4>Bingo de campos de trama</h4>
+    <div class="badge-row">
+      <span class="badge">Edgeshark</span>
+      <span class="badge">tcpdump -vv</span>
+      <span class="badge">lectura de captura real</span>
+    </div>
+    <p>Usando la captura <code>/tmp/enlace.pcap</code> generada en la Parte 1 (o una captura en vivo vista desde Edgeshark en TopoViewer), cada estudiante marca en su cart&oacute;n los 6 campos a medida que los identifica en una trama real:</p>
+    <div class="bingo-grid">
+      <div class="bingo-cell"><span class="bfield">MAC Origen</span>Capa 2</div>
+      <div class="bingo-cell"><span class="bfield">MAC Destino</span>Capa 2</div>
+      <div class="bingo-cell"><span class="bfield">Type / EtherType</span>0x0800 &oacute; 0x0806</div>
+      <div class="bingo-cell"><span class="bfield">IP Origen</span>Capa 3</div>
+      <div class="bingo-cell"><span class="bfield">IP Destino</span>Capa 3</div>
+      <div class="bingo-cell"><span class="bfield">TTL</span>cabecera IP</div>
+      <div class="bingo-cell"><span class="bfield">Seq</span>ICMP</div>
+      <div class="bingo-cell"><span class="bfield">Tipo ICMP</span>8 (Request) / 0 (Reply)</div>
+      <div class="bingo-cell"><span class="bfield">&iexcl;BINGO!</span>l&iacute;nea completa</div>
+    </div>
+    <p class="muted" style="font-size:13px;">Gana quien primero complete una fila, columna o diagonal se&ntilde;alando correctamente el valor de cada campo en la captura real (no vale copiar un valor de otro compa&ntilde;ero: el docente verifica contra la traza propia de cada instancia).</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECCION 5                                                     -->
+<!-- ============================================================ -->
+<section id="s5">
+  <div class="sec-label">Secci&oacute;n 05</div>
+  <h2>Objetivos, r&uacute;brica y conclusiones</h2>
+
+  <h3><span class="num">5.1</span>Objetivos de aprendizaje</h3>
+  <div class="obj-grid">
+    <div class="obj-card">
+      <span class="otype">Declarativos (saber)</span>
+      <ul>
+        <li>Describir la estructura de una trama Ethernet II y el rol de cada campo.</li>
+        <li>Explicar el prop&oacute;sito de ARP como protocolo de resoluci&oacute;n L3&rarr;L2.</li>
+        <li>Diferenciar ICMP Echo Request/Reply y su rol diagn&oacute;stico.</li>
+      </ul>
+    </div>
+    <div class="obj-card">
+      <span class="otype">Procedimentales (saber hacer)</span>
+      <ul>
+        <li>Editar correctamente los marcadores <code>${USER_ID}</code>/<code>${OCTET}</code> de un YAML propio y desplegar/destruir la topolog&iacute;a resultante desde TopoViewer de forma aut&oacute;noma en una VM compartida.</li>
+        <li>Capturar y filtrar tr&aacute;fico con <code>tcpdump</code>/Edgeshark, identificando campos L2 y L3.</li>
+        <li>Aplicar y remover degradaci&oacute;n de enlace con <code>tc netem</code> e interpretar su efecto en <code>ping</code>.</li>
+      </ul>
+    </div>
+    <div class="obj-card">
+      <span class="otype">Actitudinales (saber ser)</span>
+      <ul>
+        <li>Trabajar de forma responsable en un recurso compartido (VM &uacute;nica para 15 estudiantes), sin acceso directo a su shell.</li>
+        <li>Colaborar en pareja manteniendo el rigor del an&aacute;lisis estad&iacute;stico.</li>
+        <li>Sostener la curiosidad t&eacute;cnica al formular hip&oacute;tesis frente a las preguntas gu&iacute;a.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3><span class="num">5.2</span>R&uacute;brica de evaluaci&oacute;n anal&iacute;tica</h3>
+  <div class="table-wrap rubric-wrap">
+    <table class="rubric">
+      <thead>
+        <tr>
+          <th class="crit-col">Criterio</th>
+          <th>4 &mdash; Excelente</th>
+          <th>3 &mdash; Satisfactorio</th>
+          <th>2 &mdash; Insuficiente</th>
+          <th>1 &mdash; No logrado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Despliegue en Containerlab</strong></td>
+          <td class="score-cell lvl-4">Edita correctamente <code>${USER_ID}</code>/<code>${OCTET}</code> en su YAML, despliega, inspecciona y destruye su instancia sin ayuda desde TopoViewer, sin colisionar con otros</td>
+          <td class="score-cell lvl-3">Despliega correctamente con ayuda m&iacute;nima</td>
+          <td class="score-cell lvl-2">Despliega pero con errores de aislamiento (mismo <code>USER_ID</code> que otro estudiante, o marcador sin reemplazar)</td>
+          <td class="score-cell lvl-1">No logra desplegar la topolog&iacute;a</td>
+        </tr>
+        <tr>
+          <td><strong>Explicaci&oacute;n del mecanismo ARP</strong></td>
+          <td class="score-cell lvl-4">Explica Request/Reply, broadcast vs. unicast y su rol L2/L3 con vocabulario preciso</td>
+          <td class="score-cell lvl-3">Explica el flujo general con alg&uacute;n error menor de terminolog&iacute;a</td>
+          <td class="score-cell lvl-2">Identifica el tr&aacute;fico ARP en la captura pero no explica su prop&oacute;sito</td>
+          <td class="score-cell lvl-1">No identifica ni explica ARP</td>
+        </tr>
+        <tr>
+          <td><strong>Configuraci&oacute;n de degradaci&oacute;n con <code>tc</code></strong></td>
+          <td class="score-cell lvl-4">Aplica, modifica y elimina <code>netem loss</code> correctamente, interpretando el resultado en <code>ping / iperf3</code></td>
+          <td class="score-cell lvl-3">Aplica la degradaci&oacute;n correctamente con ayuda para interpretarla</td>
+          <td class="score-cell lvl-2">Aplica el comando con errores de sintaxis que requieren correcci&oacute;n</td>
+          <td class="score-cell lvl-1">No logra aplicar la degradaci&oacute;n</td>
+        </tr>
+        <tr>
+          <td><strong>An&aacute;lisis del flujo ICMP/L2 en Edgeshark</strong></td>
+          <td class="score-cell lvl-4">Identifica los 5 campos clave (MAC, EtherType, IP, TTL, seq) sin gu&iacute;a</td>
+          <td class="score-cell lvl-3">Identifica la mayor&iacute;a de los campos con alguna ayuda</td>
+          <td class="score-cell lvl-2">Identifica solo 1&ndash;2 campos</td>
+          <td class="score-cell lvl-1">No logra leer la captura</td>
+        </tr>
+        <tr>
+          <td><strong>Carrera de p&eacute;rdida de paquetes</strong></td>
+          <td class="score-cell lvl-4">Estimaci&oacute;n dentro de &plusmn;5% del valor real y justifica el margen estad&iacute;stico</td>
+          <td class="score-cell lvl-3">Estimaci&oacute;n dentro de &plusmn;10% del valor real</td>
+          <td class="score-cell lvl-2">Participa pero sin an&aacute;lisis del margen de error</td>
+          <td class="score-cell lvl-1">No participa de la actividad</td>
+        </tr>
+        <tr>
+          <td><strong>Bingo de campos de trama</strong></td>
+          <td class="score-cell lvl-4">Completa el bingo identificando correctamente todos los campos en su propia captura</td>
+          <td class="score-cell lvl-3">Identifica la mayor&iacute;a de los campos con alguna consulta</td>
+          <td class="score-cell lvl-2">Completa el bingo con varios campos incorrectos</td>
+          <td class="score-cell lvl-1">No completa la actividad</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3><span class="num">5.3</span>Conclusiones y cierre pedag&oacute;gico</h3>
+  <p>Este trabajo pr&aacute;ctico constituye el primer contacto de los estudiantes con un entorno de virtualizaci&oacute;n de redes basado en contenedores. M&aacute;s all&aacute; de la herramienta, el n&uacute;cleo conceptual que deber&iacute;a quedar instalado es doble:</p>
+  <ul>
+    <li><strong>La trama como unidad de trabajo de Capa 2</strong>: un contenedor con direccionamiento MAC propio, delimitado por campos que el analista puede leer directamente en una captura, y cuya integridad depende de mecanismos (FCS) que act&uacute;an por debajo de lo que el sistema operativo llega a observar.</li>
+    <li><strong>ARP como bisagra entre capas</strong>: el primer ejemplo concreto, en la cursada, de c&oacute;mo un protocolo de una capa (L3, con IP) depende de un mecanismo de la capa inferior (L2, con MAC) para poder materializarse en el medio f&iacute;sico. Este mismo patr&oacute;n de &laquo;bisagra entre capas&raquo; va a reaparecer una y otra vez en el resto de la cursada.</li>
+  </ul>
+  <p>El trabajo en una VM compartida, adem&aacute;s, introduce tempranamente una habilidad transversal de la ingenier&iacute;a: operar de forma responsable sobre infraestructura compartida &mdash;en este caso, editando con cuidado los par&aacute;metros propios de un archivo de configuraci&oacute;n antes de desplegarlo&mdash; respetando el espacio de nombres y los recursos de los dem&aacute;s usuarios, una condici&oacute;n habitual en entornos productivos reales.</p>
+  <p>La captura de trazas mediante tcpdump y su posterior an&aacute;lisis analítico forman parte de la práctica operativa cotidiana en entornos de producción de redes reales. Esta metodología constituye una herramienta clave de diagnóstico técnico para la detección y resolución de fallas entre interfaces.</p>
+</section>
+
+</div>
+
+<footer>
+  Redes &mdash; Telecomunicaciones B &middot; Trabajo Pr&aacute;ctico N&deg;2 &middot; Unidad 5.5.2, Capa de Enlace de Datos &middot; Topolog&iacute;a base: s07-capa-enlace
+</footer>
+
+</body>
+</html>
